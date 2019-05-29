@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Collider))]
@@ -20,11 +21,11 @@ public abstract class Interactable : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetButtonDown("LeftClick") && !isOnObject && currentlySelected)
-        {
-            currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
-            Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
-        }
+        //if(Input.GetButtonDown("LeftClick") && !isOnObject && currentlySelected)
+        //{
+        //    currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
+        //    Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
+        //}
     }
 
     void OnMouseEnter()
@@ -45,29 +46,32 @@ public abstract class Interactable : MonoBehaviour
             Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
         }
         currentlySelected = gameObject;
-        contextPanel = Resources.Load<GameObject>(@"Prefabs/Context Menu Panel");
+        contextPanel = Instantiate(Resources.Load<GameObject>(@"Prefabs/Context Menu Panel"), GameData.ui.transform);
         contextPanel.GetComponentInChildren<Text>().text = gameObject.name;
         GetComponent<cakeslice.Outline>().eraseRenderer = false;
-        Instantiate(contextPanel, GameData.ui.transform);
         CreateButtons();
     }
 
     void CreateButtons()
     {
-        GameObject contextButton;
-        foreach(Interactable interactible in GetComponentsInChildren<Interactable>())
+        
+
+        foreach (Interactable interactible in GetComponentsInChildren<Interactable>())
         {
+            //interactible.Invoke("Test", 0);
+            //contextButton.onClick.AddListener();
             MemberInfo[] MyMemberInfo = interactible.GetType().GetMethods();
-            
             List<ContextMenuAttribute> contextMenuAttributes = new List<ContextMenuAttribute>();
             foreach(MemberInfo memberInfo in MyMemberInfo)
             {
                 ContextMenuAttribute contextMenuAttribute = (ContextMenuAttribute)Attribute.GetCustomAttribute(memberInfo, typeof(ContextMenuAttribute));
                 if (contextMenuAttribute != null)
                 {
-                    contextButton = Resources.Load<GameObject>(@"Prefabs/Context Menu Button");
+                    Button contextButton = Instantiate(Resources.Load<Button>(@"Prefabs/Context Menu Button"), contextPanel.transform);
                     contextButton.GetComponentInChildren<Text>().text = contextMenuAttribute.CommandName;
-                    Instantiate(contextPanel, GameData.ui.transform);
+                    //interactible.Invoke(memberInfo.Name, 0);
+                    contextButton.onClick.AddListener(() => interactible.Invoke(memberInfo.Name, 0));
+                    
                 }
             }   
         }

@@ -7,6 +7,7 @@ using UnityEngine;
 public class ContextMenuAttribute : Attribute
 {
     private string commandName;
+
     public ContextMenuAttribute(string commandName)
     {
         this.commandName = commandName;

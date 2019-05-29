@@ -68,7 +68,7 @@ public class Teleporter : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (!GameData.ui.GetComponentInChildren<Text>().enabled)
+        if (!GameData.ui.GetComponentInChildren<Text>().enabled && GameData.players.Count > 1)
         {
             GameData.ui.GetComponentInChildren<Text>().text = string.Format("To {0} ({1}/{2})", connectingRoom.name, numOfPlayersAtTeleporter, GameData.players.Count);
             GameData.ui.GetComponentInChildren<Text>().enabled = true;

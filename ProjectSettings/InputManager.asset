@@ -374,11 +374,11 @@ InputManager:
     axis: 0
     joyNum: 6
   - serializedVersion: 3
-    m_Name: Cancel
+    m_Name: LeftClick
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: mouse 0
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0

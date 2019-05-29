@@ -6,8 +6,14 @@ using UnityEngine;
 [AttributeUsage(AttributeTargets.Method)]
 public class ContextMenuAttribute : Attribute
 {
-    public ContextMenuAttribute()
+    private string commandName;
+    public ContextMenuAttribute(string commandName)
     {
+        this.commandName = commandName;
+    }
 
+    public virtual string CommandName
+    {
+        get { return commandName; }
     }
 }

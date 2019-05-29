@@ -79,4 +79,10 @@ public class Player : Interactable
             //transform.rotation = Quaternion.Euler(0f, heading * Mathf.Rad2Deg, 0f);
         }
     }
+
+    [@ContextMenuAttribute("Output")]
+    public void Test()
+    {
+        Debug.Log("TEst");
+    }
 }

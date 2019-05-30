@@ -85,4 +85,10 @@ public class Player : Interactable
     {
         Debug.Log("TEst");
     }
+
+    [@ContextMenuAttribute("Output2")]
+    public void Test2()
+    {
+        Debug.Log("TEst222");
+    }
 }

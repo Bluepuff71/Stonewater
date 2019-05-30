@@ -91,4 +91,10 @@ public class Player : Interactable
     {
         Debug.Log("TEst222");
     }
+
+    [@ContextMenuAttribute("Test 4")]
+    public void TEst3()
+    {
+        Debug.Log("Test3");
+    }
 }

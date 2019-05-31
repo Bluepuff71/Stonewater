@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 5992121742262167805}
   - component: {fileID: 5359608044718806705}
   - component: {fileID: 8030479088574611668}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,7 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2709687860439412039}
   - component: {fileID: 7668355571489642952}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Outline Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ public class Teleporter : MonoBehaviour
 
     public AudioClip arriveSound;
 
-    public List<GameObject> arrivalPoints;
+    public List<GameObject> arrivalPoints = new List<GameObject>();
 
     private Room currentRoom;
 

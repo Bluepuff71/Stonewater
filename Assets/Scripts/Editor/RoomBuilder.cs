@@ -7,6 +7,7 @@ using System;
 public class RoomBuilder : EditorWindow
 {
     string roomName = "Room";
+    Vector3 roomPos = Vector3.zero;
     Vector3 cameraPos = Vector3.zero;
     Vector3 cameraRotVector = Vector3.zero;
     Quaternion cameraRotQuad;
@@ -21,7 +22,7 @@ public class RoomBuilder : EditorWindow
     int roomMusicSize = 0;
     float musicVolume = .5f;
 
-    bool musicFoldout;
+    bool musicFoldout = true;
     enum TeleporterShape
     {
         Box = 0,
@@ -29,10 +30,11 @@ public class RoomBuilder : EditorWindow
     }
     TeleporterShape teleporterShape = TeleporterShape.Box;
     Vector3 teleportPos = Vector3.zero;
+    float teleporterHeight;
     AudioClip teleportSound;
 
     AudioClip arriveSound;
-
+    Teleporter connectingTeleporter;
     int numOfArrivalPoints;
 
     bool customFadeLength = false;
@@ -59,6 +61,11 @@ public class RoomBuilder : EditorWindow
             EditorGUI.indentLevel++;
             roomOrganizer = EditorGUILayout.ObjectField("Room Organizer", roomOrganizer, typeof(GameObject), allowSceneObjects: true) as GameObject;
             roomName = EditorGUILayout.TextField("Room Name", roomName);
+            roomPos = EditorGUILayout.Vector3Field("Room Base Position", roomPos);
+            if (GUILayout.Button("Align With Camera"))
+            {
+                roomPos = SceneView.lastActiveSceneView.camera.transform.position;
+            }
             EditorGUI.indentLevel--;
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
@@ -132,9 +139,11 @@ public class RoomBuilder : EditorWindow
             if (GUILayout.Button("Align With Camera"))
             {
                 teleportPos = SceneView.lastActiveSceneView.camera.transform.position;
-                //Cast a ray to the gound to get the height
+                RaycastHit hit;
+                Physics.Raycast(SceneView.lastActiveSceneView.camera.transform.position, Vector3.down, out hit, 200);
+                teleporterHeight = hit.distance;
             }
-
+            connectingTeleporter = EditorGUILayout.ObjectField("Connecting Teleporter", connectingTeleporter, typeof(Teleporter), true) as Teleporter;
 
             teleportSound = EditorGUILayout.ObjectField("Teleport Sound", teleportSound, typeof(AudioClip), allowSceneObjects: false) as AudioClip;
             arriveSound = EditorGUILayout.ObjectField("Arrive Sound", arriveSound, typeof(AudioClip), allowSceneObjects: false) as AudioClip;
@@ -156,6 +165,7 @@ public class RoomBuilder : EditorWindow
             if (roomOrganizer)
             {
                 GameObject roomObj = new GameObject(roomName);
+                roomObj.transform.position = roomPos;
                 roomObj.transform.SetParent(roomOrganizer.transform);
                 Room room = roomObj.AddComponent<Room>();
                 room.roomMusic = roomMusic;
@@ -165,6 +175,9 @@ public class RoomBuilder : EditorWindow
                 GameObject roomCameraObj = new GameObject(string.Format("{0} Camera", roomName));
                 roomCameraObj.transform.SetParent(roomObj.transform);
                 Camera roomCamera = roomCameraObj.AddComponent<Camera>();
+                int layerMask = 1 << 2;
+                layerMask = ~layerMask;
+                roomCamera.cullingMask = layerMask;
                 roomCamera.transform.position = cameraPos;
                 roomCamera.transform.rotation = cameraRotQuad;
                 roomCameraObj.AddComponent<AudioListener>();
@@ -174,17 +187,90 @@ public class RoomBuilder : EditorWindow
                 {
                     if (currentMainCamera)
                     {
-                        currentMainCamera.tag = "";
+                        currentMainCamera.tag = "Untagged";
                     }
                     roomCameraObj.tag = "MainCamera";
                 }
-                GameObject teleportObj = new GameObject("Teleporter");
+                GameObject teleporterObj;
+                switch (teleporterShape)
+                {
+                    case TeleporterShape.Box:
+                        teleporterObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        break;
+                    case TeleporterShape.Cylinder:
+                        teleporterObj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                        break;
+                    default:
+                        teleporterObj = new GameObject("Broke");
+                        break;
+                }
+                teleporterObj.layer = 2;
+                teleporterObj.transform.position = teleportPos;
+                teleporterObj.transform.SetParent(roomObj.transform);
+                teleporterObj.GetComponent<Collider>().isTrigger = true;
+                Teleporter teleporter = teleporterObj.AddComponent<Teleporter>();
+
+                teleporter.connectingTeleporter = connectingTeleporter;
+
+                //IF THE TELEPORTER I AM CONNECTING TO WAS THE FIRST ROOM (SO IT DIDN'T HAVE A CONNECTING TELEPORTER) CONNECT IT TO ME
+                if(teleporter.connectingTeleporter && !teleporter.connectingTeleporter.connectingTeleporter)
+                {
+                    teleporter.connectingTeleporter.connectingTeleporter = teleporter;
+                }
+
+                teleporter.teleportSound = teleportSound;
+                teleporter.arriveSound = arriveSound;
+
+                teleporterObj.transform.localScale = new Vector3(1, teleporterHeight * 2, 1);
+                Vector3 spawnDir = DirectionToSpawn(teleporterObj.transform) * 2;
+                GameObject arrivalPointPrefab = Resources.Load(@"Prefabs/ArrivalPoint") as GameObject;
+                for (int i = 0; i < numOfArrivalPoints; i++)
+                {
+                    GameObject arrivalPoint = Instantiate(arrivalPointPrefab, teleporterObj.transform, true);
+                    //RaycastHit hit;
+                    //Physics.Raycast(arrivalPoint.transform.position, Vector3.down, out hit, 200);
+
+                    //Debug.Log(arrivalPoint.transform.TransformPoint(hit.point));
+                    //Debug.Log(hit.point);
+
+                    //arrivalPoint.transform.localPosition = new Vector3(spawnDir.x + (i*.5f), arrivalPoint.transform.InverseTransformPoint(hit.point).y / teleporterObj.transform.localScale.y, spawnDir.z);
+                }
+                teleporter.forceFadeLengths = customFadeLength;
+                teleporter.forceFadeOutLength = customFadeOutLength;
+                teleporter.forceFadeInLength = customFadeInLength;
+
 
             }
             else
             {
                 Debug.LogError("All fields must be filled out before a room can be generated.");
             }
+        }
+    }
+
+    private Vector3 DirectionToSpawn(Transform start)
+    {
+        RaycastHit hitForward;
+        RaycastHit hitLeft;
+        RaycastHit hitRight;
+        Physics.Raycast(start.position, start.forward, out hitForward, 10);
+        Physics.Raycast(start.position, -start.right, out hitLeft, 10);
+        Physics.Raycast(start.position, start.right, out hitRight, 10);
+        if (hitForward.distance > hitLeft.distance && hitForward.distance > hitRight.distance)
+        {
+            return Vector3.forward;
+        }
+        else if (hitLeft.distance > hitForward.distance && hitLeft.distance > hitRight.distance)
+        {
+            return Vector3.left;
+        }
+        else if (hitRight.distance > hitForward.distance && hitRight.distance > hitLeft.distance)
+        {
+            return Vector3.right;
+        }
+        else
+        {
+            return Vector3.back;
         }
     }
 }

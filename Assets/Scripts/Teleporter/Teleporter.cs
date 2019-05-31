@@ -13,9 +13,11 @@ public class Teleporter : MonoBehaviour
 
     public List<GameObject> arrivalPoints = new List<GameObject>();
 
-    private Room currentRoom;
+    [HideInInspector]
+    public Room currentRoom;
 
-    private Room connectingRoom;
+    [HideInInspector]
+    public Room connectingRoom;
 
     public Teleporter connectingTeleporter;
 

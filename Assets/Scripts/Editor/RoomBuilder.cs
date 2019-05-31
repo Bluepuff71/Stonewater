@@ -106,7 +106,7 @@ public class RoomBuilder : EditorWindow
             }
             EditorGUI.indentLevel--;
             musicVolume = EditorGUILayout.Slider("Room Music Volume", musicVolume, 0, 1);
-            continueMusicWhereLeftOff = EditorGUILayout.ToggleLeft("Restart music when entering room?", continueMusicWhereLeftOff);
+            continueMusicWhereLeftOff = EditorGUILayout.ToggleLeft("Continue Music From Last Point?", continueMusicWhereLeftOff);
             loopRoomMusic = EditorGUILayout.ToggleLeft("Loop the room music?", loopRoomMusic);
             EditorGUI.indentLevel--;
         }
@@ -212,28 +212,27 @@ public class RoomBuilder : EditorWindow
 
                 teleporter.connectingTeleporter = connectingTeleporter;
 
-                //IF THE TELEPORTER I AM CONNECTING TO WAS THE FIRST ROOM (SO IT DIDN'T HAVE A CONNECTING TELEPORTER) CONNECT IT TO ME
-                if(teleporter.connectingTeleporter && !teleporter.connectingTeleporter.connectingTeleporter)
+                if (teleporter.connectingTeleporter)
                 {
-                    teleporter.connectingTeleporter.connectingTeleporter = teleporter;
+                    teleporter.gameObject.name = string.Format("{0} To {1}", teleporter.currentRoom.gameObject.name, teleporter.connectingTeleporter.currentRoom.gameObject.name);
+                    //IF THE TELEPORTER I AM CONNECTING TO WAS THE FIRST ROOM (SO IT DIDN'T HAVE A CONNECTING TELEPORTER) CONNECT IT TO ME
+                    if (!teleporter.connectingTeleporter.connectingTeleporter)
+                    {
+                        teleporter.connectingTeleporter.connectingTeleporter = teleporter;
+                        teleporter.connectingTeleporter.gameObject.name = string.Format("{0} To {1}", teleporter.connectingTeleporter.currentRoom.gameObject.name, teleporter.currentRoom.gameObject.name);
+                    }
                 }
 
                 teleporter.teleportSound = teleportSound;
                 teleporter.arriveSound = arriveSound;
 
                 teleporterObj.transform.localScale = new Vector3(1, teleporterHeight * 2, 1);
-                Vector3 spawnDir = DirectionToSpawn(teleporterObj.transform) * 2;
+                Vector3 spawnDir = teleporterObj.transform.TransformVector(DirectionToSpawn(teleporterObj.transform) * 4);
                 GameObject arrivalPointPrefab = Resources.Load(@"Prefabs/ArrivalPoint") as GameObject;
                 for (int i = 0; i < numOfArrivalPoints; i++)
                 {
                     GameObject arrivalPoint = Instantiate(arrivalPointPrefab, teleporterObj.transform, true);
-                    //RaycastHit hit;
-                    //Physics.Raycast(arrivalPoint.transform.position, Vector3.down, out hit, 200);
-
-                    //Debug.Log(arrivalPoint.transform.TransformPoint(hit.point));
-                    //Debug.Log(hit.point);
-
-                    //arrivalPoint.transform.localPosition = new Vector3(spawnDir.x + (i*.5f), arrivalPoint.transform.InverseTransformPoint(hit.point).y / teleporterObj.transform.localScale.y, spawnDir.z);
+                    arrivalPoint.transform.position = new Vector3(spawnDir.x + (i * .5f), teleporterObj.GetComponent<Renderer>().bounds.min.y + arrivalPoint.GetComponent<Renderer>().bounds.extents.y, spawnDir.z); 
                 }
                 teleporter.forceFadeLengths = customFadeLength;
                 teleporter.forceFadeOutLength = customFadeOutLength;

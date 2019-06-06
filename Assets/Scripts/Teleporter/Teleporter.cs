@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
+[ExecuteAlways]
 [RequireComponent(typeof(AudioSource))]
 public class Teleporter : MonoBehaviour
 {

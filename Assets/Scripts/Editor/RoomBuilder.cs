@@ -10,7 +10,7 @@ public class RoomBuilder : EditorWindow
     Vector3 roomPos = Vector3.zero;
     Vector3 cameraPos = Vector3.zero;
     Vector3 cameraRotVector = Vector3.zero;
-    Quaternion cameraRotQuad;
+    Quaternion cameraRotQuad = new Quaternion();
 
     bool isMainCamera = false;
     GameObject roomOrganizer;
@@ -31,11 +31,11 @@ public class RoomBuilder : EditorWindow
     TeleporterShape teleporterShape = TeleporterShape.Box;
     Vector3 teleportPos = Vector3.zero;
     float teleporterHeight;
-    AudioClip teleportSound;
+    AudioClip teleportSound = null;
 
-    AudioClip arriveSound;
-    Teleporter connectingTeleporter;
-    int numOfArrivalPoints;
+    AudioClip arriveSound = null;
+    Teleporter connectingTeleporter = null;
+    int numOfArrivalPoints = 1;
 
     bool customFadeLength = false;
 
@@ -214,7 +214,8 @@ public class RoomBuilder : EditorWindow
 
                 if (teleporter.connectingTeleporter)
                 {
-                    teleporter.gameObject.name = string.Format("{0} To {1}", teleporter.currentRoom.gameObject.name, teleporter.connectingTeleporter.currentRoom.gameObject.name);
+                    Debug.Log(teleporter.GetComponentInParent<Room>().gameObject.name);
+                    teleporter.gameObject.name = string.Format("{0} To {1}", teleporter.GetComponentInParent<Room>().gameObject.name, teleporter.arrivalPoints[0].GetComponentInParent<Room>().gameObject.name);
                     //IF THE TELEPORTER I AM CONNECTING TO WAS THE FIRST ROOM (SO IT DIDN'T HAVE A CONNECTING TELEPORTER) CONNECT IT TO ME
                     if (!teleporter.connectingTeleporter.connectingTeleporter)
                     {
@@ -227,7 +228,8 @@ public class RoomBuilder : EditorWindow
                 teleporter.arriveSound = arriveSound;
 
                 teleporterObj.transform.localScale = new Vector3(1, teleporterHeight * 2, 1);
-                Vector3 spawnDir = teleporterObj.transform.TransformVector(DirectionToSpawn(teleporterObj.transform) * 4);
+                Vector3 spawnDir = teleporterObj.transform.TransformPoint(DirectionToSpawn(teleporterObj.transform) * 4);
+                Debug.Log(spawnDir);
                 GameObject arrivalPointPrefab = Resources.Load(@"Prefabs/ArrivalPoint") as GameObject;
                 for (int i = 0; i < numOfArrivalPoints; i++)
                 {
@@ -238,7 +240,7 @@ public class RoomBuilder : EditorWindow
                 teleporter.forceFadeOutLength = customFadeOutLength;
                 teleporter.forceFadeInLength = customFadeInLength;
 
-
+                //learAllValues();
             }
             else
             {
@@ -257,19 +259,57 @@ public class RoomBuilder : EditorWindow
         Physics.Raycast(start.position, start.right, out hitRight, 10);
         if (hitForward.distance > hitLeft.distance && hitForward.distance > hitRight.distance)
         {
-            return Vector3.forward;
+            return start.forward;
         }
         else if (hitLeft.distance > hitForward.distance && hitLeft.distance > hitRight.distance)
         {
-            return Vector3.left;
+            return -start.right;
         }
         else if (hitRight.distance > hitForward.distance && hitRight.distance > hitLeft.distance)
         {
-            return Vector3.right;
+            return start.right;
         }
         else
         {
-            return Vector3.back;
+            return -start.forward;
         }
+    }
+
+    private void ClearAllValues()
+    {
+        roomName = "Room";
+        roomPos = Vector3.zero;
+        cameraPos = Vector3.zero;
+        cameraRotVector = Vector3.zero;
+        cameraRotQuad = new Quaternion();
+
+        isMainCamera = false;
+        roomOrganizer = null;
+        audioClip = null;
+        continueMusicWhereLeftOff = false;
+        loopRoomMusic = false;
+
+        roomMusic = new List<AudioClip>();
+        roomMusicSize = 0;
+        musicVolume = .5f;
+
+        musicFoldout = true;
+        teleporterShape = TeleporterShape.Box;
+        teleportPos = Vector3.zero;
+        teleporterHeight = 0;
+        teleportSound = null;
+
+        arriveSound = null;
+        connectingTeleporter = null;
+        numOfArrivalPoints = 1;
+
+        customFadeLength = false;
+
+        customFadeOutLength = 1;
+        customFadeInLength = 1;
+
+        roomHeadFoldout = false;
+        musicHeadFoldout = false;
+        cameraHeadFoldout = false;
     }
 }

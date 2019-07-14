@@ -34,7 +34,7 @@ public class RoomBuilder : EditorWindow
     AudioClip teleportSound = null;
 
     AudioClip arriveSound = null;
-    Teleporter connectingTeleporter = null;
+    Teleporter_OLD connectingTeleporter = null;
     int numOfArrivalPoints = 1;
 
     bool customFadeLength = false;
@@ -143,7 +143,7 @@ public class RoomBuilder : EditorWindow
                 Physics.Raycast(SceneView.lastActiveSceneView.camera.transform.position, Vector3.down, out hit, 200);
                 teleporterHeight = hit.distance;
             }
-            connectingTeleporter = EditorGUILayout.ObjectField("Connecting Teleporter", connectingTeleporter, typeof(Teleporter), true) as Teleporter;
+            connectingTeleporter = EditorGUILayout.ObjectField("Connecting Teleporter", connectingTeleporter, typeof(Teleporter_OLD), true) as Teleporter_OLD;
 
             teleportSound = EditorGUILayout.ObjectField("Teleport Sound", teleportSound, typeof(AudioClip), allowSceneObjects: false) as AudioClip;
             arriveSound = EditorGUILayout.ObjectField("Arrive Sound", arriveSound, typeof(AudioClip), allowSceneObjects: false) as AudioClip;
@@ -208,7 +208,7 @@ public class RoomBuilder : EditorWindow
                 teleporterObj.transform.position = teleportPos;
                 teleporterObj.transform.SetParent(roomObj.transform);
                 teleporterObj.GetComponent<Collider>().isTrigger = true;
-                Teleporter teleporter = teleporterObj.AddComponent<Teleporter>();
+                Teleporter_OLD teleporter = teleporterObj.AddComponent<Teleporter_OLD>();
 
                 teleporter.connectingTeleporter = connectingTeleporter;
 

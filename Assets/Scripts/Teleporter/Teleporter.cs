@@ -87,7 +87,7 @@ public class Teleporter : MonoBehaviour
             teleporterAudioSource.Play();
             if (currentRoom.roomMusic[currentRoom.currentSongIndex] != connectingRoom.roomMusic[currentRoom.currentSongIndex])
             {
-                GameData.uiMusic.CrossFadeClip(0, fadeOutLength);
+                GameData.uiMusic.CrossFadeClip(0, fadeOutLength, () => Debug.Log("FIX THIS"));
             }
 
             GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(1, fadeOutLength, delegate
@@ -106,7 +106,7 @@ public class Teleporter : MonoBehaviour
                 }
                 if (currentRoom.roomMusic != connectingRoom.roomMusic)
                 {
-                    GameData.ui.GetComponent<AudioSource>().CrossFadeClip(connectingRoom.roomMusicVolume, fadeInLength);
+                    GameData.ui.GetComponent<AudioSource>().CrossFadeClip(connectingRoom.roomMusicVolume, fadeInLength, () => Debug.Log("FIX THIS"));
                 }
 
                 //FADE IN

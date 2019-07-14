@@ -109,7 +109,7 @@ public class Room : MonoBehaviour
             GameData.uiMusic.Play();
         } else
         {
-            GameData.uiMusic.CrossFadeClip(toRoom.roomMusicVolume, .5f);
+            GameData.uiMusic.CrossFadeClip(toRoom.roomMusicVolume, .5f, () => Debug.Log("FIX THIS"));
         }
         
         //CAMERA SWITCHING

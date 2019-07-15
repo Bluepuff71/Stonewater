@@ -25,7 +25,7 @@ public class Teleporter_OLD : MonoBehaviour
 
     private AudioSource teleporterAudioSource;
 
-    List<GameObject> arrivalPoints = new List<GameObject>();
+    public List<GameObject> arrivalPoints = new List<GameObject>();
 
     [Range(.3f, 5f)]
     public float forceFadeOutLength = .3f;

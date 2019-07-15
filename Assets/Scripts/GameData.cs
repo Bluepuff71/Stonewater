@@ -24,8 +24,8 @@ public class GameData : MonoBehaviour
         }
         return unavaliableNumbers;
     }
-
-    public static GameObject ui = GameObject.FindGameObjectWithTag("UI");
-
-    public static AudioSource uiMusic = ui.GetComponent<AudioSource>();
+    [System.Obsolete]
+    public static GameObject ui;
+    [System.Obsolete]
+    public static AudioSource uiMusic = null;
 }

@@ -8,9 +8,18 @@ public class SoundPlayer : MonoBehaviour
 
     public AudioSource audioSource;
 
-    public Tape tape;
+    public Tape Tape { get => tape; set => tape = value; }
 
-    private bool wasStopped;
+    private bool wasStopped = true;
+    private Tape tape;
+
+    private void Start()
+    {
+        if (!audioSource)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -21,7 +30,7 @@ public class SoundPlayer : MonoBehaviour
         }
     }
 
-    public void Play()
+    public void Play(float fadeInLength = .1f)
     {
         if (audioSource.isPlaying)
         {
@@ -29,12 +38,32 @@ public class SoundPlayer : MonoBehaviour
         }
         else
         {
+            wasStopped = false;
             audioSource.clip = tape.GetCurrentTrack().audioClip;
             audioSource.time = tape.TrackLocation;
             audioSource.volume = 0;
-            CrossFadeSound.CrossFadeClip(audioSource, tape.GetCurrentTrack().volume, tape.fadeInTime);
+            CrossFadeSound.CrossFadeClip(audioSource, tape.GetCurrentTrack().volume, fadeInLength);
             audioSource.Play();
         }
+    }
+
+    public void QuickPlay(AudioClipWithVolume track)
+    {
+        if (audioSource.isPlaying)
+        {
+            Debug.LogWarning("2 playing Soundplayers attached to the same audio source! Make sure to stop the soundplayer before playing another one!");
+        }
+        else
+        {
+            audioSource.clip = track.audioClip;
+            audioSource.volume = track.volume;
+            audioSource.Play();
+        }
+    }
+
+    public void QuickPlay(AudioClip audioClip)
+    {
+        QuickPlay(new AudioClipWithVolume(audioClip, 1));
     }
 
     private void NextTrack()
@@ -56,7 +85,7 @@ public class SoundPlayer : MonoBehaviour
         audioSource.volume = nextTrack.volume;
     }
 
-    public void Stop()
+    public void Stop(float fadeOutLength = .1f)
     {
         if (tape.PersistTracks)
         {
@@ -67,6 +96,6 @@ public class SoundPlayer : MonoBehaviour
             tape.RestartTape();
         }
         wasStopped = true;
-        CrossFadeSound.CrossFadeClip(audioSource, 0, tape.fadeOutTime, () => audioSource.Stop());
+        CrossFadeSound.CrossFadeClip(audioSource, 0, fadeOutLength, () => audioSource.Stop());
     }
 }

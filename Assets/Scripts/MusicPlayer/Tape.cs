@@ -5,16 +5,11 @@ using UnityEngine;
 [System.Serializable]
 public class Tape
 {
+    [SerializeField]
     private List<AudioClipWithVolume> tracks;
     public bool ShouldLoop { get => shouldLoop; set => shouldLoop = value; }
     public bool PersistTracks { get => persistTracks; set => persistTracks = value; }
     public float TrackLocation { get => trackLocation; set => trackLocation = value; }
-
-
-    #region fading
-    public float fadeOutTime;
-    public float fadeInTime;
-    #endregion
 
     #region persistance
     private int trackIndex;

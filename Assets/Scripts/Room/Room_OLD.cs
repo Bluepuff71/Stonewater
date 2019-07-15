@@ -32,7 +32,7 @@ public class Room_OLD : MonoBehaviour
     {
         GameData.ui = GameObject.FindGameObjectWithTag("UI");
 
-        GameData.uiMusic.volume = 0;
+        GameData.uiAudioSource.volume = 0;
         musicLocation = 0;
         if (!roomCamera)
         {
@@ -52,24 +52,24 @@ public class Room_OLD : MonoBehaviour
         {
             if (roomMusic.Count != 0)
             {
-                GameData.uiMusic.clip = roomMusic[0];
+                GameData.uiAudioSource.clip = roomMusic[0];
             }
-            GameData.uiMusic.volume = roomMusicVolume;
-            GameData.uiMusic.PlayDelayed(0);
+            GameData.uiAudioSource.volume = roomMusicVolume;
+            GameData.uiAudioSource.PlayDelayed(0);
         }
     }
 
     private void Update()
     {
-        if (roomMusic.Count != 0 && GameData.uiMusic.time == roomMusic[currentSongIndex].length && roomCamera == Camera.main)
+        if (roomMusic.Count != 0 && GameData.uiAudioSource.time == roomMusic[currentSongIndex].length && roomCamera == Camera.main)
         {
-            GameData.uiMusic.Stop();
+            GameData.uiAudioSource.Stop();
             if (currentSongIndex + 1 == roomMusic.Count)
             {
                 if (loopRoomMusic)
                 {
                     currentSongIndex = 0;
-                    GameData.uiMusic.clip = roomMusic[0];
+                    GameData.uiAudioSource.clip = roomMusic[0];
                 }
                 else
                 {
@@ -79,9 +79,9 @@ public class Room_OLD : MonoBehaviour
             else
             {
                 currentSongIndex++;
-                GameData.uiMusic.clip = roomMusic[currentSongIndex];
+                GameData.uiAudioSource.clip = roomMusic[currentSongIndex];
             }
-            GameData.uiMusic.Play();
+            GameData.uiAudioSource.Play();
         }
     }
 
@@ -95,21 +95,21 @@ public class Room_OLD : MonoBehaviour
         {
             if (continueMusicWhereLeftOff)
             {
-                musicLocation = GameData.uiMusic.time;
-                currentSongIndex = roomMusic.IndexOf(GameData.uiMusic.clip);
+                musicLocation = GameData.uiAudioSource.time;
+                currentSongIndex = roomMusic.IndexOf(GameData.uiAudioSource.clip);
             }
             else
             {
                 musicLocation = 0;
                 currentSongIndex = 0;
             }
-            GameData.uiMusic.Stop();
-            GameData.uiMusic.clip = toRoom.roomMusic[toRoom.currentSongIndex];
-            GameData.uiMusic.time = toRoom.musicLocation;
-            GameData.uiMusic.Play();
+            GameData.uiAudioSource.Stop();
+            GameData.uiAudioSource.clip = toRoom.roomMusic[toRoom.currentSongIndex];
+            GameData.uiAudioSource.time = toRoom.musicLocation;
+            GameData.uiAudioSource.Play();
         } else
         {
-            GameData.uiMusic.CrossFadeClip(toRoom.roomMusicVolume, .5f, () => Debug.Log("FIX THIS"));
+            GameData.uiAudioSource.CrossFadeClip(toRoom.roomMusicVolume, .5f, () => Debug.Log("FIX THIS"));
         }
         
         //CAMERA SWITCHING

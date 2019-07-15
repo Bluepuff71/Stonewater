@@ -91,7 +91,7 @@ public class Teleporter_OLD : MonoBehaviour
             teleporterAudioSource.Play();
             if (currentRoom.roomMusic[currentRoom.currentSongIndex] != connectingRoom.roomMusic[currentRoom.currentSongIndex])
             {
-                GameData.uiMusic.CrossFadeClip(0, fadeOutLength, () => Debug.Log("FIX THIS"));
+                GameData.uiAudioSource.CrossFadeClip(0, fadeOutLength, () => Debug.Log("FIX THIS"));
             }
 
             GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(1, fadeOutLength, delegate
@@ -99,7 +99,7 @@ public class Teleporter_OLD : MonoBehaviour
                 GetComponentInParent<Room_OLD>().ChangeRoom(connectingRoom); //call the other room's changeroom function
                 foreach(Player player in GameData.players)
                 {
-                    player.transform.position = arrivalPoints[player.playerNumber].transform.position;
+                    player.transform.position = arrivalPoints[player.controllerNumber].transform.position;
                 }
 
                 //PLAY THE ENTER ROOM NOISE

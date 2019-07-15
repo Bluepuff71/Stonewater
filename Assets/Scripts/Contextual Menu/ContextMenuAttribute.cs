@@ -2,19 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-[AttributeUsage(AttributeTargets.Method)]
-public class ContextMenuAttribute : Attribute
+namespace Bluepuff
 {
-    private string commandName;
-
-    public ContextMenuAttribute(string commandName)
+    [AttributeUsage(AttributeTargets.Method)]
+    public class ContextMenuAttribute : Attribute
     {
-        this.commandName = commandName;
-    }
+        private string commandName;
 
-    public virtual string CommandName
-    {
-        get { return commandName; }
+        public ContextMenuAttribute(string commandName)
+        {
+            this.commandName = commandName;
+        }
+
+        public virtual string CommandName
+        {
+            get { return commandName; }
+        }
     }
 }

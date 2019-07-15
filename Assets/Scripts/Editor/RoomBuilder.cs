@@ -167,7 +167,7 @@ public class RoomBuilder : EditorWindow
                 GameObject roomObj = new GameObject(roomName);
                 roomObj.transform.position = roomPos;
                 roomObj.transform.SetParent(roomOrganizer.transform);
-                Room room = roomObj.AddComponent<Room>();
+                Room_OLD room = roomObj.AddComponent<Room_OLD>();
                 room.roomMusic = roomMusic;
                 room.roomMusicVolume = musicVolume;
                 room.continueMusicWhereLeftOff = continueMusicWhereLeftOff;
@@ -214,8 +214,8 @@ public class RoomBuilder : EditorWindow
 
                 if (teleporter.connectingTeleporter)
                 {
-                    Debug.Log(teleporter.GetComponentInParent<Room>().gameObject.name);
-                    teleporter.gameObject.name = string.Format("{0} To {1}", teleporter.GetComponentInParent<Room>().gameObject.name, teleporter.arrivalPoints[0].GetComponentInParent<Room>().gameObject.name);
+                    Debug.Log(teleporter.GetComponentInParent<Room_OLD>().gameObject.name);
+                    teleporter.gameObject.name = string.Format("{0} To {1}", teleporter.GetComponentInParent<Room_OLD>().gameObject.name, teleporter.arrivalPoints[0].GetComponentInParent<Room_OLD>().gameObject.name);
                     //IF THE TELEPORTER I AM CONNECTING TO WAS THE FIRST ROOM (SO IT DIDN'T HAVE A CONNECTING TELEPORTER) CONNECT IT TO ME
                     if (!teleporter.connectingTeleporter.connectingTeleporter)
                     {

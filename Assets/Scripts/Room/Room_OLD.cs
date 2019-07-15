@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class Room : MonoBehaviour
+public class Room_OLD : MonoBehaviour
 {
     //CAN BE TOP DOWN VIEW
 
@@ -85,7 +85,7 @@ public class Room : MonoBehaviour
         }
     }
 
-    public void ChangeRoom(Room toRoom)
+    public void ChangeRoom(Room_OLD toRoom)
     {
         //CAMERA SWITCHING
         Camera.main.gameObject.SetActive(false);

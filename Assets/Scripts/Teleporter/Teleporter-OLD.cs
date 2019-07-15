@@ -14,10 +14,10 @@ public class Teleporter_OLD : MonoBehaviour
     public AudioClip arriveSound;
 
     [HideInInspector]
-    public Room currentRoom;
+    public Room_OLD currentRoom;
 
     [HideInInspector]
-    public Room connectingRoom;
+    public Room_OLD connectingRoom;
 
     public Teleporter_OLD connectingTeleporter;
 
@@ -96,7 +96,7 @@ public class Teleporter_OLD : MonoBehaviour
 
             GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(1, fadeOutLength, delegate
             {
-                GetComponentInParent<Room>().ChangeRoom(connectingRoom); //call the other room's changeroom function
+                GetComponentInParent<Room_OLD>().ChangeRoom(connectingRoom); //call the other room's changeroom function
                 foreach(Player player in GameData.players)
                 {
                     player.transform.position = arrivalPoints[player.playerNumber].transform.position;

@@ -51,7 +51,7 @@ public class SoundPlayer : MonoBehaviour
                 Stop();
             }
         }
-        AudioClipWithVolume nextTrack = tape.GetNextTrack(); //This shouldn't been null because we checked earlier
+        AudioClipWithVolume nextTrack = tape.GetNextTrack(shouldPersist: true); //This shouldn't been null because we checked earlier
         audioSource.clip = nextTrack.audioClip;
         audioSource.volume = nextTrack.volume;
     }

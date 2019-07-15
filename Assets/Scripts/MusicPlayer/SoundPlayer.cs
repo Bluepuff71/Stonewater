@@ -2,57 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//TODO finish soundplayer, track persistance etc
-
 //The sound player is a way of playing a playlist of tracks, there should be no way to choose which song to play
 public class SoundPlayer : MonoBehaviour
 {
 
     public AudioSource audioSource;
 
-    public List<AudioClipWithVolume> tracks;
+    public Tape tape;
 
-    #region Track Persistance
-    public bool saveTrackLocation;
-   // public bool logPositionWhenStopped; MAYBE
-    private int trackIndex;
-    private float trackLocation;
     private bool wasStopped;
-    #endregion
 
-    #region fading
-    public float fadeOutTime;
-    public float fadeInTime;
-    #endregion
-
-    public bool loopPlaylist;
-
-    public bool loopTrack;
-    private void Awake()
-    {
-        wasStopped = true;
-    }
     // Update is called once per frame
     void Update()
     {
-        if (!audioSource.isPlaying)
+        if (!audioSource.isPlaying && !wasStopped)
         {
-            if (loopTrack)
-            {
-                Play(trackIndex);
-            }
-            else if (loopPlaylist && trackIndex + 1 == tracks.Count)
-            {
-                Play(0);
-            }
-            else if (trackIndex + 1 != tracks.Count)
-            {
-                Play(trackIndex + 1);
-            }
+            NextTrack();
         }
     }
 
-    public void Play(int forceIndex = 0)
+    public void Play()
     {
         if (audioSource.isPlaying)
         {
@@ -60,45 +29,44 @@ public class SoundPlayer : MonoBehaviour
         }
         else
         {
-            if (wasStopped)
-            {
-                if (saveTrackLocation)
-                {
-                    SwitchTrack(tracks[trackIndex]);
-                }
-                else
-                {
-                    SwitchTrack(tracks[forceIndex]);
-                }
-                audioSource.volume = 0;
-                CrossFadeSound.CrossFadeClip(audioSource, tracks[trackIndex].volume, fadeInTime);
-            }
-            wasStopped = false;
+            audioSource.clip = tape.GetCurrentTrack().audioClip;
+            audioSource.time = tape.TrackLocation;
+            audioSource.volume = 0;
+            CrossFadeSound.CrossFadeClip(audioSource, tape.GetCurrentTrack().volume, tape.fadeInTime);
             audioSource.Play();
         }
     }
 
-    private void SwitchTrack(AudioClipWithVolume to)
+    private void NextTrack()
     {
-        audioSource.clip = to.audioClip;
-        if (saveTrackLocation)
+        if (tape.AtEndOfTape())
         {
-            audioSource.time = trackLocation;
+            if (tape.ShouldLoop)
+            {
+                tape.RestartTape();
+            }
+            else
+            {
+                Debug.LogWarning("No more tracks found. Stopping tape.");
+                Stop();
+            }
         }
-        audioSource.volume = to.volume;
-        trackIndex = tracks.FindIndex((track) =>
-        {
-            return track.audioClip == audioSource.clip;
-        });
+        AudioClipWithVolume nextTrack = tape.GetNextTrack(); //This shouldn't been null because we checked earlier
+        audioSource.clip = nextTrack.audioClip;
+        audioSource.volume = nextTrack.volume;
     }
 
     public void Stop()
     {
-        if (saveTrackLocation)
+        if (tape.PersistTracks)
         {
-            trackLocation = audioSource.time;
+            tape.TrackLocation = audioSource.time;
+        }
+        else
+        {
+            tape.RestartTape();
         }
         wasStopped = true;
-        CrossFadeSound.CrossFadeClip(audioSource, 0, fadeOutTime, () => audioSource.Stop());
+        CrossFadeSound.CrossFadeClip(audioSource, 0, tape.fadeOutTime, () => audioSource.Stop());
     }
 }

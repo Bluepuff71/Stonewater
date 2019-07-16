@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : Interactable
+public class Player : MonoBehaviour
 {
     private CharacterController characterController;
 
-    public int playerNumber = -1;
+    public int controllerNumber = -1;
+    public bool readyToTeleport;
 
     public float speed = 2.0f;
     public float rotationSpeed = 100.0f;
@@ -24,51 +25,64 @@ public class Player : Interactable
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(playerNumber == -1)
+        //Move all of this out of here and into a character select screen
+        if(controllerNumber == -1)
         {
             List<int> unavaliableControllers = GameData.GetUnAvaliableControllers();
             if (Input.GetButton("START_1") && !unavaliableControllers.Contains(1))
             {
-                playerNumber = 1;
+                controllerNumber = 1;
             }
             if (Input.GetButton("START_2") && !unavaliableControllers.Contains(2))
             {
-                playerNumber = 2;
+                controllerNumber = 2;
             }
             if (Input.GetButton("START_3") && !unavaliableControllers.Contains(3))
             {
-                playerNumber = 3;
+                controllerNumber = 3;
             }
             if (Input.GetButton("START_4") && !unavaliableControllers.Contains(4))
             {
-                playerNumber = 4;
+                controllerNumber = 4;
             }
             if (Input.GetButton("START_5") && !unavaliableControllers.Contains(5))
             {
-                playerNumber = 5;
+                controllerNumber = 5;
             }
             if (Input.GetButton("START_6") && !unavaliableControllers.Contains(6))
             {
-                playerNumber = 6;
+                controllerNumber = 6;
             }
         }
         else
         {
+            
             // Get the horizontal and vertical axis.
             // By default they are mapped to the arrow keys.
             // The value is in the range -1 to 1
-            float up_down_translation = Input.GetAxis(string.Format("UP_DOWN_{0}", playerNumber));
-            float left_right_translation = Input.GetAxis(string.Format("LEFT_RIGHT_{0}", playerNumber));
+            float up_down_translation = Input.GetAxis(string.Format("UP_DOWN_{0}", controllerNumber));
+            float left_right_translation = Input.GetAxis(string.Format("LEFT_RIGHT_{0}", controllerNumber));
 
-            Vector3 relativeMovement = Camera.main.transform.TransformVector(left_right_translation, 0, up_down_translation);
+            //Vector3 relativeMovement = Camera.main.transform.TransformVector(left_right_translation, 0, up_down_translation);
+            //camera forward and right vectors:
+            Vector3 forward = Camera.main.transform.forward;
+            Vector3 right = Camera.main.transform.right;
+            Debug.Log(forward + ", " + right);
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+            if(forward == Vector3.zero)
+            {
+                forward = Camera.main.transform.up;
+                forward.y = 0;
+            }
 
-            relativeMovement.y -= gravity;
+            
+            //this is the direction in the world space we want to move:
+            Vector3 relativeMovement = forward * up_down_translation + right * left_right_translation;
 
-            //moveDirection = left_right_translation * mainCameraTransform.worldToLocalMatrix.MultiplyVector(transform.right).normalized + up_down_translation * -mainCameraTransform.worldToLocalMatrix.MultiplyVector(transform.forward).normalized; ;
-            //moveDirection = transform.TransformDirection(moveDirection);
-            //moveDirection *= speed;
-
-            //moveDirection.y -= gravity * Time.deltaTime;
+            //relativeMovement.y -= gravity;
 
             if (characterController.enabled)
             {
@@ -78,23 +92,5 @@ public class Player : Interactable
             //float heading = Mathf.Atan2(joyVector.x, joyVector.y);
             //transform.rotation = Quaternion.Euler(0f, heading * Mathf.Rad2Deg, 0f);
         }
-    }
-
-    [@ContextMenuAttribute("Output")]
-    public void Test()
-    {
-        Debug.Log("TEst");
-    }
-
-    [@ContextMenuAttribute("Output2")]
-    public void Test2()
-    {
-        Debug.Log("TEst222");
-    }
-
-    [@ContextMenuAttribute("Test 4")]
-    public void TEst3()
-    {
-        Debug.Log("Test3");
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bluepuff;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -17,21 +18,16 @@ public abstract class Interactable : MonoBehaviour
     GameObject contextPanelPrefab;
     Button contextButtonPrefab;
     Button contextButton;
-
-    void Awake()
+    void Start()
     {
         contextPanelPrefab = Resources.Load<GameObject>(@"Prefabs/Context Menu Panel");
         contextButtonPrefab = Resources.Load<Button>(@"Prefabs/Context Menu Button");
-    }
-    void Start()
-    {
-
         GetComponent<cakeslice.Outline>().eraseRenderer = true;
     }
 
     void Update()
     {
-        if (Input.GetButtonDown("LeftClick") && !EventSystem.current.IsPointerOverGameObject() && !isOnObject && currentlySelected)
+        if ((Input.GetButtonDown("LeftClick") && !EventSystem.current.IsPointerOverGameObject() && !isOnObject && currentlySelected) || (currentlySelected && !isOnScreen()))
         {
             currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
             Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
@@ -41,7 +37,6 @@ public abstract class Interactable : MonoBehaviour
     void OnMouseEnter()
     {
         isOnObject = true;
-
     }
     void OnMouseDown()
     {
@@ -66,29 +61,36 @@ public abstract class Interactable : MonoBehaviour
         isOnObject = false;
     }
 
+    bool isOnScreen()
+    {
+        Vector3 screenPoint = Camera.main.WorldToViewportPoint(currentlySelected.transform.position);
+        return screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
+    }
+
     void CreateButtons()
     {
         int i = 0;
-        foreach (Interactable interactible in GetComponentsInChildren<Interactable>())
+        foreach (Interactable interactible in GetComponents<Interactable>())
         {
-            MemberInfo[] MyMemberInfo = interactible.GetType().GetMethods();
-            List<ContextMenuAttribute> contextMenuAttributes = new List<ContextMenuAttribute>();
-
-            foreach (MemberInfo memberInfo in MyMemberInfo)
-            {
-
-                ContextMenuAttribute contextMenuAttribute = (ContextMenuAttribute)Attribute.GetCustomAttribute(memberInfo, typeof(ContextMenuAttribute));
-                if (contextMenuAttribute != null)
+            //buckle up, here is a crazy lambda function
+            Array.ForEach(
+                //First Parameter
+                Array.FindAll(interactible.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public),
+                    (member) =>
+                    {
+                        return member.GetCustomAttribute<ContextMenuAttribute>() != null;
+                    }),
+                //Second Parameter
+                (memberWithContext) =>
                 {
                     contextButton = Instantiate(contextButtonPrefab, contextPanel.transform);
-                    contextButton.GetComponentInChildren<Text>().text = contextMenuAttribute.CommandName;
+                    contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().CommandName;
                     Debug.Log(contextButton.transform.localPosition);
                     contextButton.transform.localPosition = new Vector3(0, (-30f * i) - 35, 0);
-                    contextButton.onClick.AddListener(() => interactible.Invoke(memberInfo.Name, 0));
+                    contextButton.onClick.AddListener(() => interactible.Invoke(memberWithContext.Name, 0));
                     i++;
-                }
-            }
+                });
         }
-        contextPanel.GetComponent<RectTransform>().sizeDelta = new Vector3(98.9f, (32 * i) + 20);
+        contextPanel.GetComponent<RectTransform>().sizeDelta = new Vector3(250, (32 * i) + 25);
     }
 }

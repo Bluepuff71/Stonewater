@@ -3,123 +3,133 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(AudioSource))]
-public class Teleporter : MonoBehaviour
+public class Teleporter : Interactable
 {
 
-    public AudioClip teleportSound;
+    private int numOfPlayersReady;
 
-    public AudioClip arriveSound;
+    private int numOfPlayersAtTelporter;
 
-    public List<GameObject> arrivalPoints;
+    public Teleporter connectedTeleporter;
 
     private Room currentRoom;
 
     private Room connectingRoom;
 
-    public Teleporter connectingTeleporter;
+    public AudioClip teleportSound;
 
-    private int numOfPlayersAtTeleporter;
+    public AudioClip arriveSound;
 
-    private AudioSource teleporterAudioSource;
+    private SoundPlayer soundPlayer;
 
-    [Range(.3f, 5f)]
-    public float forceFadeOutLength = .3f;
-
-    private float fadeOutLength = .3f;
-
-    [Range(.3f, 5f)]
-    public float forceFadeInLength = .3f;
-
-    private float fadeInLength = .3f;
-
-    public bool forceFadeLengths;
-
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         currentRoom = GetComponentInParent<Room>();
-        connectingRoom = arrivalPoints[0].GetComponentInParent<Room>();
-        teleporterAudioSource = GetComponent<AudioSource>();
-        if (!forceFadeLengths)
-        {
-            if (teleportSound)
-            {
-                fadeOutLength = teleportSound.length;
-            }
-            if (arriveSound)
-            {
-                fadeInLength = arriveSound.length;
-            }
-        }
-        else
-        {
-            fadeOutLength = forceFadeOutLength;
-            fadeInLength = forceFadeInLength;
-        }
+        connectingRoom = connectedTeleporter.GetComponentInParent<Room>();
+        soundPlayer = GetComponent<SoundPlayer>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        numOfPlayersAtTeleporter++;
+        numOfPlayersAtTelporter++;
     }
-
 
     private void OnTriggerStay(Collider other)
     {
-        if (!GameData.ui.GetComponentInChildren<Text>().enabled && GameData.players.Count > 1)
+        GameObject playerObj;
+        if (other.GetComponent<Player>())
         {
-            GameData.ui.GetComponentInChildren<Text>().text = string.Format("To {0} ({1}/{2})", connectingRoom.name, numOfPlayersAtTeleporter, GameData.players.Count);
-            GameData.ui.GetComponentInChildren<Text>().enabled = true;
-        }
-        if (numOfPlayersAtTeleporter == GameData.players.Count)
-        {
-            numOfPlayersAtTeleporter--;
-            other.enabled = false;
-
-            //AUDIO STUFF
-            teleporterAudioSource.clip = teleportSound;
-            teleporterAudioSource.Play();
-            if (currentRoom.roomMusic[currentRoom.currentSongIndex] != connectingRoom.roomMusic[currentRoom.currentSongIndex])
+            playerObj = other.gameObject;
+            Player player = playerObj.GetComponent<Player>();
+            if (!playerObj.GetComponent<Player>().readyToTeleport)
             {
-                GameData.uiMusic.CrossFadeClip(0, fadeOutLength);
+                if (!GameData.ui.GetComponentInChildren<Text>().enabled)
+                {
+                    GameData.ui.GetComponentInChildren<Text>().text = string.Format("To {0}. Press A to ready up ({1}/{2})", connectingRoom.name, numOfPlayersReady, GameData.players.Count);
+                    GameData.ui.GetComponentInChildren<Text>().enabled = true;
+                }
+                if (Input.GetButtonDown(string.Format("CONFIRM_{0}", player.controllerNumber)))
+                {
+                    player.readyToTeleport = true;
+                    numOfPlayersReady++;
+                    TeleportIfReady();
+                }
             }
-
-            GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(1, fadeOutLength, delegate
-            {
-                GetComponentInParent<Room>().ChangeRoom(connectingRoom); //call the other room's changeroom function
-                foreach(Player player in GameData.players)
-                {
-                    player.transform.position = arrivalPoints[player.playerNumber].transform.position;
-                }
-
-                //PLAY THE ENTER ROOM NOISE
-                if (arriveSound)
-                {
-                    connectingTeleporter.teleporterAudioSource.clip = arriveSound;
-                    connectingTeleporter.teleporterAudioSource.Play();
-                }
-                if (currentRoom.roomMusic != connectingRoom.roomMusic)
-                {
-                    GameData.ui.GetComponent<AudioSource>().CrossFadeClip(connectingRoom.roomMusicVolume, fadeInLength);
-                }
-
-                //FADE IN
-                GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(0, fadeInLength, delegate
-                {
-                    other.enabled = true;
-                });
-            });
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        numOfPlayersAtTeleporter--;
-        if(numOfPlayersAtTeleporter == 0)
+        numOfPlayersAtTelporter--;
+        if(numOfPlayersAtTelporter == 0)
         {
             GameData.ui.GetComponentInChildren<Text>().enabled = false;
         }
+    }
+
+    private void TeleportIfReady()
+    {
+        if (numOfPlayersReady == GameData.players.Count)
+        {
+            Teleport();
+        }
+    }
+
+    [Bluepuff.ContextMenu("Force Teleport")]
+    private void Teleport()
+    {
+        if (connectedTeleporter)
+        {
+            GameData.PerformOnPlayers((player) =>
+            {
+                player.enabled = false;
+            });
+            if (teleportSound)
+            {
+                soundPlayer.QuickPlay(teleportSound);
+            }
+            if (currentRoom.music != connectingRoom.music)
+            {
+                GameData.mainSoundPlayer.Stop(GameData.globalFadeOutTime);
+            }
+            GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(1, GameData.globalFadeOutTime, () =>
+            {
+                numOfPlayersReady = 0;
+                currentRoom.ChangeRoom(connectingRoom); //call the other room's changeroom function
+                GameData.players.ForEach((player) =>
+                {
+                    player.readyToTeleport = false;
+                    player.transform.position = connectedTeleporter.transform.position;
+                });
+                if (arriveSound)
+                {
+                    connectedTeleporter.soundPlayer.QuickPlay(arriveSound);
+                }
+                //if (currentRoom.music != connectingRoom.music)
+                //{
+                //    GameData.mainSoundPlayer.Play(GameData.globalFadeInTime);
+                //}
+
+                //FADE IN
+                GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(0, GameData.globalFadeInTime, () =>
+                {
+                    GameData.PerformOnPlayers((player) =>
+                    {
+                        player.enabled = true;
+                    });
+                });
+                    
+            });
+        }
+        else
+        {
+            Debug.LogWarning("No connected teleporter exists!");
+        }
+    }
+
+    [Bluepuff.ContextMenu("TEst")]
+    public void Test()
+    {
+        Debug.Log("TEst");
     }
 }

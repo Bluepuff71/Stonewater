@@ -8,8 +8,6 @@ public class SoundPlayer : MonoBehaviour
 
     public AudioSource audioSource;
 
-    public Tape Tape { get => tape; set => tape = value; }
-
     private bool wasStopped = true;
     private Tape tape;
 
@@ -64,6 +62,23 @@ public class SoundPlayer : MonoBehaviour
     public void QuickPlay(AudioClip audioClip)
     {
         QuickPlay(new AudioClipWithVolume(audioClip, 1));
+    }
+
+    public void SwitchTape(Tape toTape, bool playWhenSwitched = true)
+    {
+        if (!wasStopped)
+        {
+            Stop();
+        }
+        //if (continueIfSameTrackExists)
+        //{
+
+        //}
+        tape = toTape;
+        if (playWhenSwitched)
+        {
+            Play();
+        }
     }
 
     private void NextTrack()

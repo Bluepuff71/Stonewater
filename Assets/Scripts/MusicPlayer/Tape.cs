@@ -12,10 +12,14 @@ public class Tape
     public float TrackLocation { get => trackLocation; set => trackLocation = value; }
 
     #region persistance
+    [SerializeField]
     private int trackIndex;
+    [SerializeField]
     private float trackLocation;
+    [SerializeField]
     private bool persistTracks;
     #endregion
+    [SerializeField]
     private bool shouldLoop;
 
 
@@ -94,6 +98,8 @@ public class Tape
     {
         return (trackIndex + 1 == tracks.Count);
     }
+
+    //public void ShuffleTape() MAYBE
 
     public void RestartTape()
     {

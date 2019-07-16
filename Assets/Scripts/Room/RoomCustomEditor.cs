@@ -52,10 +52,10 @@ public class RoomCustomEditor : Editor
             }
             EditorGUILayout.EndHorizontal();
             EditorGUI.indentLevel = 1;
+            room.music.PersistTracks = EditorGUILayout.ToggleLeft("Persist When Stopped?", room.music.PersistTracks);
             if (room.music.GetTrackAmount() > 1)
             {
                 room.music.ShouldLoop = EditorGUILayout.ToggleLeft("Loop Playlist", room.music.ShouldLoop);
-                room.music.PersistTracks = EditorGUILayout.ToggleLeft("Persist When Stopped?", room.music.PersistTracks);
             }
             //fadeFoldout = EditorGUILayout.Foldout(fadeFoldout, "Fade in/out");
             //if (fadeFoldout)

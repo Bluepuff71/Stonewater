@@ -8,6 +8,8 @@ public class Teleporter : Interactable
 
     private int numOfPlayersReady;
 
+    private int numOfPlayersAtTelporter;
+
     public Teleporter connectedTeleporter;
 
     private Room currentRoom;
@@ -20,26 +22,16 @@ public class Teleporter : Interactable
 
     private SoundPlayer soundPlayer;
 
-    #region fade
-    [Range(.3f, 5)]
-    public float fadeOutTime;
-    [Range(.3f, 5)]
-    public float fadeInTime;
-    #endregion
-
     private void Awake()
     {
         currentRoom = GetComponentInParent<Room>();
         connectingRoom = connectedTeleporter.GetComponentInParent<Room>();
-        if(fadeOutTime == 0)
-        {
-            fadeOutTime = .3f;
-        }
-        if(fadeInTime == 0)
-        {
-            fadeInTime = .3f;
-        }
         soundPlayer = GetComponent<SoundPlayer>();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        numOfPlayersAtTelporter++;
     }
 
     private void OnTriggerStay(Collider other)
@@ -66,6 +58,15 @@ public class Teleporter : Interactable
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        numOfPlayersAtTelporter--;
+        if(numOfPlayersAtTelporter == 0)
+        {
+            GameData.ui.GetComponentInChildren<Text>().enabled = false;
+        }
+    }
+
     private void TeleportIfReady()
     {
         if (numOfPlayersReady == GameData.players.Count)
@@ -79,15 +80,19 @@ public class Teleporter : Interactable
     {
         if (connectedTeleporter)
         {
+            GameData.PerformOnPlayers((player) =>
+            {
+                player.enabled = false;
+            });
             if (teleportSound)
             {
                 soundPlayer.QuickPlay(teleportSound);
             }
             if (currentRoom.music != connectingRoom.music)
             {
-                GameData.mainSoundPlayer.Stop(fadeOutTime);
+                GameData.mainSoundPlayer.Stop(GameData.globalFadeOutTime);
             }
-            GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(1, fadeOutTime, () =>
+            GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(1, GameData.globalFadeOutTime, () =>
             {
                 numOfPlayersReady = 0;
                 currentRoom.ChangeRoom(connectingRoom); //call the other room's changeroom function
@@ -100,18 +105,31 @@ public class Teleporter : Interactable
                 {
                     connectedTeleporter.soundPlayer.QuickPlay(arriveSound);
                 }
-                if (currentRoom.music != connectingRoom.music)
-                {
-                    GameData.mainSoundPlayer.Play(fadeInTime);
-                }
+                //if (currentRoom.music != connectingRoom.music)
+                //{
+                //    GameData.mainSoundPlayer.Play(GameData.globalFadeInTime);
+                //}
 
                 //FADE IN
-                GameData.ui.GetComponentInChildren<Image>().CrossFadeAlpha(0, fadeInTime, false);
+                GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(0, GameData.globalFadeInTime, () =>
+                {
+                    GameData.PerformOnPlayers((player) =>
+                    {
+                        player.enabled = true;
+                    });
+                });
+                    
             });
         }
         else
         {
             Debug.LogWarning("No connected teleporter exists!");
         }
+    }
+
+    [Bluepuff.ContextMenu("TEst")]
+    public void Test()
+    {
+        Debug.Log("TEst");
     }
 }

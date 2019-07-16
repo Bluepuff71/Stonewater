@@ -21,6 +21,11 @@ public class GameData
         });
     }
 
+    public static void PerformOnPlayers(System.Action<Player> action)
+    {
+        players.ForEach(action);
+    }
+
     public static List<int> GetUnAvaliableControllers()
     {
         List<int> unavaliableNumbers = new List<int>();
@@ -36,8 +41,12 @@ public class GameData
 
     public static GameObject ui = GameObject.FindGameObjectWithTag("UI");
 
-    public static SoundPlayer mainSoundPlayer = Camera.main.GetComponent<SoundPlayer>();
+    public static SoundPlayer mainSoundPlayer = ui.GetComponent<SoundPlayer>();
 
     [System.Obsolete]
     public static AudioSource uiAudioSource = ui.GetComponent<AudioSource>();
+
+    public static float globalFadeInTime = .5f;
+    public static float globalFadeOutTime = .5f;
+
 }

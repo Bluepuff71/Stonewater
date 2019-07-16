@@ -63,17 +63,26 @@ public class Player : MonoBehaviour
             float up_down_translation = Input.GetAxis(string.Format("UP_DOWN_{0}", controllerNumber));
             float left_right_translation = Input.GetAxis(string.Format("LEFT_RIGHT_{0}", controllerNumber));
 
-            //Debug.Log(up_down_translation + ", " + left_right_translation);
+            //Vector3 relativeMovement = Camera.main.transform.TransformVector(left_right_translation, 0, up_down_translation);
+            //camera forward and right vectors:
+            Vector3 forward = Camera.main.transform.forward;
+            Vector3 right = Camera.main.transform.right;
+            Debug.Log(forward + ", " + right);
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+            if(forward == Vector3.zero)
+            {
+                forward = Camera.main.transform.up;
+                forward.y = 0;
+            }
 
-            Vector3 relativeMovement = Camera.main.transform.TransformVector(left_right_translation, 0, up_down_translation);
+            
+            //this is the direction in the world space we want to move:
+            Vector3 relativeMovement = forward * up_down_translation + right * left_right_translation;
 
-            relativeMovement.y -= gravity;
-
-            //moveDirection = left_right_translation * mainCameraTransform.worldToLocalMatrix.MultiplyVector(transform.right).normalized + up_down_translation * -mainCameraTransform.worldToLocalMatrix.MultiplyVector(transform.forward).normalized; ;
-            //moveDirection = transform.TransformDirection(moveDirection);
-            //moveDirection *= speed;
-
-            //moveDirection.y -= gravity * Time.deltaTime;
+            //relativeMovement.y -= gravity;
 
             if (characterController.enabled)
             {

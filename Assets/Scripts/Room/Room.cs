@@ -38,9 +38,8 @@ public class Room : MonoBehaviour
         {
             if (music.GetTrackAmount() != 0)
             {
-                GameData.mainSoundPlayer.Tape = music;
+                GameData.mainSoundPlayer.SwitchTape(music);
             }
-            GameData.mainSoundPlayer.Play();
         }
     }
 
@@ -49,13 +48,11 @@ public class Room : MonoBehaviour
         //CAMERA SWITCHING
         Camera.main.gameObject.SetActive(false);
         toRoom.roomCamera.gameObject.SetActive(true);
-        GameData.mainSoundPlayer = toRoom.roomCamera.gameObject.GetComponent<SoundPlayer>();
 
         //MUSIC SWITCHING
         if (music != toRoom.music)
         {
-            GameData.mainSoundPlayer.Tape = toRoom.music;
-            GameData.mainSoundPlayer.Play();
+            GameData.mainSoundPlayer.SwitchTape(toRoom.music);
         }
         //else
         //{

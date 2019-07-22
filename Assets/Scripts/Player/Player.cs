@@ -12,12 +12,9 @@ public class Player : MonoBehaviour
     public float speed = 2.0f;
     public float rotationSpeed = 100.0f;
     public float gravity = 80.0F;
-    private Vector3 moveDirection = Vector3.zero;
-    private Transform mainCameraTransform;
     // Start is called before the first frame update
     void Start()
     {
-        mainCameraTransform = Camera.main.transform;
         GameData.players.Add(GetComponent<Player>());
         characterController = GetComponent<CharacterController>();
     }

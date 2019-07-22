@@ -94,10 +94,12 @@ public class SoundPlayer : MonoBehaviour
                 Debug.LogWarning("No more tracks found. Stopping tape.");
                 Stop();
             }
+        } else
+        {
+            AudioClipWithVolume nextTrack = tape.GetNextTrack(shouldPersist: true); //This shouldn't been null because we checked earlier
+            audioSource.clip = nextTrack.audioClip;
+            audioSource.volume = nextTrack.volume;
         }
-        AudioClipWithVolume nextTrack = tape.GetNextTrack(shouldPersist: true); //This shouldn't been null because we checked earlier
-        audioSource.clip = nextTrack.audioClip;
-        audioSource.volume = nextTrack.volume;
     }
 
     public void Stop(float fadeOutLength = .1f)

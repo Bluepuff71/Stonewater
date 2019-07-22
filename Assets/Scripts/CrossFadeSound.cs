@@ -18,16 +18,23 @@ public static class CrossFadeSound
 
     public static IEnumerator CrossFadeClipCOR(AudioSource audioSource, float volume, float duration, System.Action action)
     {
-        float currentVolume = audioSource.volume;
-
-
-        float counter = 0;
-
-        while (counter < duration)
+        if(duration != 0)
         {
-            counter += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(currentVolume, volume, counter / duration);
-            yield return null;
+            float currentVolume = audioSource.volume;
+
+
+            float counter = 0;
+
+            while (counter < duration)
+            {
+                counter += Time.deltaTime;
+                audioSource.volume = Mathf.Lerp(currentVolume, volume, counter / duration);
+                yield return null;
+            }
+        }
+        else
+        {
+            audioSource.volume = volume;
         }
         if (action != null)
         {

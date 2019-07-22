@@ -7,16 +7,16 @@ namespace Bluepuff
     [AttributeUsage(AttributeTargets.Method)]
     public class ContextMenuAttribute : Attribute
     {
-        private string commandName;
+        private string buttonLabel;
 
-        public ContextMenuAttribute(string commandName)
+        public ContextMenuAttribute(string buttonLabel)
         {
-            this.commandName = commandName;
+            this.buttonLabel = buttonLabel;
         }
 
-        public virtual string CommandName
+        public virtual string ButtonLabel
         {
-            get { return commandName; }
+            get { return buttonLabel; }
         }
     }
 }

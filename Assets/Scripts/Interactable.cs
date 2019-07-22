@@ -103,7 +103,7 @@ public abstract class Interactable : MonoBehaviour
                 (memberWithContext) =>
                 {
                     contextButton = Instantiate(contextButtonPrefab, contextPanel.transform);
-                    contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().ButtonName;
+                    contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().ButtonLabel;
                     Debug.Log(contextButton.transform.localPosition);
                     contextButton.transform.localPosition = new Vector3(0, (-30f * i) - 35, 0);
                     contextButton.onClick.AddListener(() => interactible.Invoke(memberWithContext.Name, 0));

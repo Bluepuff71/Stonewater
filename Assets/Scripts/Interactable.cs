@@ -35,7 +35,7 @@ public abstract class Interactable : MonoBehaviour
         {
             if ((Input.GetButtonDown(buttonTrigger) && !EventSystem.current.IsPointerOverGameObject() && !isOnObject) || (currentlySelected && !isOnScreen()))
             {
-                DestroyButtons();
+                DestroyCurrentButtons();
             }
         }
     }
@@ -54,7 +54,7 @@ public abstract class Interactable : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (trackMouseClicks && !EventSystem.current.IsPointerOverGameObject())
+        if (trackMouseClicks && !EventSystem.current.IsPointerOverGameObject() && gameObject != currentlySelected)
         {
             CreateButtons();
         }
@@ -71,7 +71,7 @@ public abstract class Interactable : MonoBehaviour
         return screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
     }
 
-    void DestroyButtons()
+    void DestroyCurrentButtons()
     {
         if (currentlySelected)
         {
@@ -82,7 +82,7 @@ public abstract class Interactable : MonoBehaviour
 
     void CreateButtons()
     {
-        DestroyButtons();
+        DestroyCurrentButtons();
         currentlySelected = gameObject;
         contextPanel = Instantiate(contextPanelPrefab, GameData.ui.transform) as GameObject;
         contextPanel.GetComponentInChildren<Text>().text = gameObject.name;
@@ -104,7 +104,6 @@ public abstract class Interactable : MonoBehaviour
                 {
                     contextButton = Instantiate(contextButtonPrefab, contextPanel.transform);
                     contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().ButtonLabel;
-                    Debug.Log(contextButton.transform.localPosition);
                     contextButton.transform.localPosition = new Vector3(0, (-30f * i) - 35, 0);
                     contextButton.onClick.AddListener(() => interactible.Invoke(memberWithContext.Name, 0));
                     i++;

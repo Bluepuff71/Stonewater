@@ -16,10 +16,14 @@ public abstract class Interactable : MonoBehaviour
     static bool isOnObject;
     GameObject contextPanel;
     GameObject contextPanelPrefab;
+    public string buttonTrigger = "LeftClick";
+    bool trackMouseClicks;
     Button contextButtonPrefab;
     Button contextButton;
     void Start()
     {
+        //One line if statement
+        trackMouseClicks = buttonTrigger.ToLower().Contains("click") ? true : false;
         contextPanelPrefab = Resources.Load<GameObject>(@"Prefabs/Context Menu Panel");
         contextButtonPrefab = Resources.Load<Button>(@"Prefabs/Context Menu Button");
         GetComponent<cakeslice.Outline>().eraseRenderer = true;
@@ -27,11 +31,21 @@ public abstract class Interactable : MonoBehaviour
 
     void Update()
     {
-        if ((Input.GetButtonDown("LeftClick") && !EventSystem.current.IsPointerOverGameObject() && !isOnObject && currentlySelected) || (currentlySelected && !isOnScreen()))
+        if (trackMouseClicks)
         {
-            currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
-            Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
+            if ((Input.GetButtonDown(buttonTrigger) && !EventSystem.current.IsPointerOverGameObject() && !isOnObject) || (currentlySelected && !isOnScreen()))
+            {
+                DestroyButtons();
+            }
         }
+    }
+
+    void FixedUpdate()
+    {
+        if (!trackMouseClicks && Input.GetButtonDown(buttonTrigger))
+        {
+            CreateButtons();
+        } 
     }
 
     void OnMouseEnter()
@@ -40,19 +54,9 @@ public abstract class Interactable : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (!EventSystem.current.IsPointerOverGameObject())
+        if (trackMouseClicks && !EventSystem.current.IsPointerOverGameObject())
         {
-            if (currentlySelected)
-            {
-                currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
-                Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
-            }
-            currentlySelected = gameObject;
-            contextPanel = Instantiate(contextPanelPrefab, GameData.ui.transform) as GameObject;
-            contextPanel.GetComponentInChildren<Text>().text = gameObject.name;
-            GetComponent<cakeslice.Outline>().eraseRenderer = false;
             CreateButtons();
-
         }
     }
 
@@ -67,10 +71,25 @@ public abstract class Interactable : MonoBehaviour
         return screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
     }
 
+    void DestroyButtons()
+    {
+        if (currentlySelected)
+        {
+            currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
+            Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
+        }
+    }
+
     void CreateButtons()
     {
+        DestroyButtons();
+        currentlySelected = gameObject;
+        contextPanel = Instantiate(contextPanelPrefab, GameData.ui.transform) as GameObject;
+        contextPanel.GetComponentInChildren<Text>().text = gameObject.name;
+        GetComponent<cakeslice.Outline>().eraseRenderer = false;
+
         int i = 0;
-        foreach (Interactable interactible in GetComponents<Interactable>())
+        foreach (Interactable interactible in GetComponentsInChildren<Interactable>())
         {
             //buckle up, here is a crazy lambda function
             Array.ForEach(
@@ -84,7 +103,7 @@ public abstract class Interactable : MonoBehaviour
                 (memberWithContext) =>
                 {
                     contextButton = Instantiate(contextButtonPrefab, contextPanel.transform);
-                    contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().CommandName;
+                    contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().ButtonName;
                     Debug.Log(contextButton.transform.localPosition);
                     contextButton.transform.localPosition = new Vector3(0, (-30f * i) - 35, 0);
                     contextButton.onClick.AddListener(() => interactible.Invoke(memberWithContext.Name, 0));

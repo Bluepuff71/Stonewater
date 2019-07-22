@@ -70,23 +70,17 @@ public class Tape
 
     public AudioClipWithVolume GetCurrentTrack()
     {
-        return tracks[trackIndex];
+        return GetTrackAt(trackIndex);
     }
 
-    public AudioClipWithVolume GetNextTrack(bool shouldPersist = false)
+    public AudioClipWithVolume GetNextTrack()
     {
-        if (AtEndOfTape())
-        {
-            return null;
-        }
-        else if (shouldPersist)
-        {
-            return tracks[trackIndex++];
-        }
-        else
-        {
-            return tracks[trackIndex + 1];
-        }
+        return GetTrackAt(trackIndex + 1);
+    }
+
+    public void LoadNextTrack()
+    {
+        trackIndex++;
     }
 
     public int GetTrackAmount()

@@ -96,9 +96,8 @@ public class SoundPlayer : MonoBehaviour
             }
         } else
         {
-            AudioClipWithVolume nextTrack = tape.GetNextTrack(shouldPersist: true); //This shouldn't been null because we checked earlier
-            audioSource.clip = nextTrack.audioClip;
-            audioSource.volume = nextTrack.volume;
+            tape.LoadNextTrack();
+            Play(0);
         }
     }
 

@@ -31,7 +31,7 @@ public static class GameUtils
         return unavaliableNumbers;
     }
 
-    public static void CrossFade(bool isFadingIn, float duration, System.Action callback) {
+    public static void CrossFadeCamera(bool isFadingIn, float duration, System.Action callback) {
         GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(isFadingIn ? 0 : 1, duration, callback);
     }
 }

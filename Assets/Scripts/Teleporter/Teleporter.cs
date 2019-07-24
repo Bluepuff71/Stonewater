@@ -92,7 +92,7 @@ public class Teleporter : Interactable
             {
                 GameData.mainSoundPlayer.Stop(GameData.globalFadeTime);
             }
-            GameUtils.CrossFade(false, GameData.globalFadeTime, () =>
+            GameUtils.CrossFadeCamera(false, GameData.globalFadeTime, () =>
             {
                 numOfPlayersReady = 0;
                 currentRoom.ChangeRoom(connectingRoom); //call the other room's changeroom function
@@ -111,7 +111,7 @@ public class Teleporter : Interactable
                 //}
 
                 //FADE IN
-                GameUtils.CrossFade(true, GameData.globalFadeTime, () =>
+                GameUtils.CrossFadeCamera(true, GameData.globalFadeTime, () =>
                 {
                     GameUtils.PerformOnPlayers((player) =>
                     {

@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 1755370810
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 12fb3ddff8496aebe21e4ffcd3fc8827
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 3f7d0c5e0986ec71841622bcb2f9be1c
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+Assets:
+- Assets/Audio/Noise of a door closing.wav
+- Assets/Audio/Noise of a door opening.wav
+- Assets/Audio/Paulownia Mall.mp3
+Dependencies: []

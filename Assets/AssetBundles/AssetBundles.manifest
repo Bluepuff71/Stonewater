@@ -1,0 +1,26 @@
+ManifestFileVersion: 0
+CRC: 2587725847
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: timestates
+      Dependencies: {}
+    Info_1:
+      Name: materials
+      Dependencies: {}
+    Info_2:
+      Name: sounds
+      Dependencies: {}
+    Info_3:
+      Name: scenes
+      Dependencies:
+        Dependency_0: materials
+        Dependency_1: sounds
+        Dependency_2: prefabs/objects
+    Info_4:
+      Name: prefabs/ui/contextmenu
+      Dependencies: {}
+    Info_5:
+      Name: prefabs/objects
+      Dependencies:
+        Dependency_0: materials

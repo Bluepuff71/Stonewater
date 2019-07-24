@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
         //Move all of this out of here and into a character select screen
         if(controllerNumber == -1)
         {
-            List<int> unavaliableControllers = GameData.GetUnAvaliableControllers();
+            List<int> unavaliableControllers = GameUtils.GetUnAvaliableControllers();
             if (Input.GetButton("START_1") && !unavaliableControllers.Contains(1))
             {
                 controllerNumber = 1;
@@ -64,7 +64,6 @@ public class Player : MonoBehaviour
             //camera forward and right vectors:
             Vector3 forward = Camera.main.transform.forward;
             Vector3 right = Camera.main.transform.right;
-            Debug.Log(forward + ", " + right);
             forward.y = 0f;
             right.y = 0f;
             forward.Normalize();

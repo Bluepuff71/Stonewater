@@ -80,7 +80,7 @@ public class Teleporter : Interactable
     {
         if (connectedTeleporter)
         {
-            GameData.PerformOnPlayers((player) =>
+            GameUtils.PerformOnPlayers((player) =>
             {
                 player.enabled = false;
             });
@@ -90,9 +90,9 @@ public class Teleporter : Interactable
             }
             if (currentRoom.music != connectingRoom.music)
             {
-                GameData.mainSoundPlayer.Stop(GameData.globalFadeOutTime);
+                GameData.mainSoundPlayer.Stop(GameData.globalFadeTime);
             }
-            GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(1, GameData.globalFadeOutTime, () =>
+            GameUtils.CrossFade(false, GameData.globalFadeTime, () =>
             {
                 numOfPlayersReady = 0;
                 currentRoom.ChangeRoom(connectingRoom); //call the other room's changeroom function
@@ -111,9 +111,9 @@ public class Teleporter : Interactable
                 //}
 
                 //FADE IN
-                GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(0, GameData.globalFadeInTime, () =>
+                GameUtils.CrossFade(true, GameData.globalFadeTime, () =>
                 {
-                    GameData.PerformOnPlayers((player) =>
+                    GameUtils.PerformOnPlayers((player) =>
                     {
                         player.enabled = true;
                     });

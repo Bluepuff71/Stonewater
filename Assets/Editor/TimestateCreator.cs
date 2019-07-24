@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -90,13 +91,17 @@ public class TimestateCreator : EditorWindow
         {
             if (useCurrentSceneSetup)
             {
-                timeStateScriptableObject.sceneSetups = new List<SceneSetup>(EditorSceneManager.GetSceneManagerSetup());
+                timeStateScriptableObject.sceneSetups = new List<SceneSetup>(
+                    Array.ConvertAll(EditorSceneManager.GetSceneManagerSetup(), 
+                    (sceneSetup) => {
+                        return new SceneSetup(sceneSetup.path, sceneSetup.isActive, sceneSetup.isLoaded); ;
+                    }));
             }
-            if (!AssetDatabase.IsValidFolder(@"Assets/Resources/Timestates"))
+            if (!AssetDatabase.IsValidFolder(@"Assets/Timestates"))
             {
-                AssetDatabase.CreateFolder(@"Assets/Resources", "Timestates");
+                AssetDatabase.CreateFolder("Assets", "Timestates");
             }
-            AssetDatabase.CreateAsset(timeStateScriptableObject, AssetDatabase.GenerateUniqueAssetPath(string.Format(@"Assets/Resources/Timestates/{0}.asset", timeStateName)));
+            AssetDatabase.CreateAsset(timeStateScriptableObject, AssetDatabase.GenerateUniqueAssetPath(string.Format(@"Assets/Timestates/{0}.asset", timeStateName)));
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             this.Close();

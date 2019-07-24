@@ -7,12 +7,15 @@ using UnityEngine.SceneManagement;
 
 public class TimestateManager
 {
-    private Timestate currentTimestate;
+    private Timestate currentTimestate = null;
     public void SwitchTo(Timestate to)
     {
         GameUtils.CrossFade(false, 2, () =>
         {
-            currentTimestate.onFinished.Invoke();
+            if(currentTimestate != null)
+            {
+                currentTimestate.onFinished.Invoke();
+            }
             //load in the Transition scene (it is always there, just unloaded) and play the scene transition
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {

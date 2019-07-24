@@ -12,7 +12,7 @@ public class Timestate
 
     public Timestate(string timeStateName, Action onStarted, Action onFinished)
     {
-        this.timestateScriptableObject = Resources.Load<TimestateScriptableObject>(string.Format(@"Timestates\{0}.asset", timeStateName));
+        //this.timestateScriptableObject = Resources.Load<TimestateScriptableObject>(@"Test2.asset");
         this.onStarted = onStarted;
         this.onFinished = onFinished;
     }

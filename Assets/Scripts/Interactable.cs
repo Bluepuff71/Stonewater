@@ -18,15 +18,17 @@ public abstract class Interactable : MonoBehaviour
     GameObject contextPanelPrefab;
     public string buttonTrigger = "LeftClick";
     bool trackMouseClicks;
-    Button contextButtonPrefab;
-    Button contextButton;
+    GameObject contextButtonPrefab;
+    GameObject contextButton;
     void Start()
     {
+        AssetBundle uiBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "AssetBundles/prefabs/ui/contextmenu"));
+        contextButtonPrefab = uiBundle.LoadAsset<GameObject>("Context Menu Button");
+        contextPanelPrefab = uiBundle.LoadAsset<GameObject>("Context Menu Panel");
         //One line if statement
         trackMouseClicks = buttonTrigger.ToLower().Contains("click") ? true : false;
-        contextPanelPrefab = Resources.Load<GameObject>(@"Prefabs/Context Menu Panel");
-        contextButtonPrefab = Resources.Load<Button>(@"Prefabs/Context Menu Button");
         GetComponent<cakeslice.Outline>().eraseRenderer = true;
+        uiBundle.Unload(false);
     }
 
     void Update()
@@ -77,6 +79,7 @@ public abstract class Interactable : MonoBehaviour
         {
             currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
             Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
+            currentlySelected = null;
         }
     }
 
@@ -105,7 +108,7 @@ public abstract class Interactable : MonoBehaviour
                     contextButton = Instantiate(contextButtonPrefab, contextPanel.transform);
                     contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().ButtonLabel;
                     contextButton.transform.localPosition = new Vector3(0, (-30f * i) - 35, 0);
-                    contextButton.onClick.AddListener(() => interactible.Invoke(memberWithContext.Name, 0));
+                    contextButton.GetComponent<Button>().onClick.AddListener(() => interactible.Invoke(memberWithContext.Name, 0));
                     i++;
                 });
         }

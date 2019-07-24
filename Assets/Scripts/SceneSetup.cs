@@ -2,23 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneSetup : MonoBehaviour
+[System.Serializable]
+public class SceneSetup
 {
-    public string path { get; set; }
-    public bool isActive { get; set; }
-    public bool isLoaded { get; set; }
+    [SerializeField]
+    private string path;
+
+    [SerializeField]
+    private bool isActive;
+
+    [SerializeField]
+    private bool isLoaded;
+
+    public string Path { get => path; set => path = value; }
+    public bool IsActive { get => isActive; set => isActive = value; }
+    public bool IsLoaded { get => isLoaded; set => isLoaded = value; }
 
     public SceneSetup()
     {
-        this.path = null;
-        this.isActive = false;
-        this.isLoaded = true;
+        this.Path = null;
+        this.IsActive = false;
+        this.IsLoaded = true;
     }
 
     public SceneSetup(string path, bool isActive, bool isLoaded)
     {
-        this.path = path;
-        this.isActive = isActive;
-        this.isLoaded = isLoaded;
+        this.Path = path;
+        this.IsActive = isActive;
+        this.IsLoaded = isLoaded;
     }
 }

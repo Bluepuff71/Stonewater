@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class TimestateTest : MonoBehaviour
 {
-    public void TimestateTesting()
+    private void OnTriggerEnter(Collider other)
     {
-        GameData.timeStateManager.SwitchTo(new Timestate("Test2", () => { Debug.Log("Test2 Started"); }, () => { Debug.Log("Test2 Finished"); }));
+        GameData.timeStateManager.SwitchTo(new Timestate("test2", () => { Debug.Log("Test2 Started"); }, () => { Debug.Log("Test2 Finished"); }));
     }
 }

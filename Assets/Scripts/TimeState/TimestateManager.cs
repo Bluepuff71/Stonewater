@@ -10,8 +10,9 @@ public class TimestateManager
     private Timestate currentTimestate = null;
     public void SwitchTo(Timestate to)
     {
-        GameUtils.CrossFade(false, 2, () =>
+        GameUtils.CrossFadeCamera(false, 5, () =>
         {
+            //TODO switch the audio to the new scene
             if(currentTimestate != null)
             {
                 currentTimestate.onFinished.Invoke();
@@ -24,17 +25,17 @@ public class TimestateManager
             currentTimestate = to;
             currentTimestate.timestateScriptableObject.sceneSetups.ForEach((scene) =>
             {
-                SceneManager.LoadSceneAsync(scene.path,LoadSceneMode.Additive);
-                if(!scene.isLoaded)
+                SceneManager.LoadSceneAsync(scene.Path,LoadSceneMode.Additive);
+                if(!scene.IsLoaded)
                 {
-                    SceneManager.UnloadSceneAsync(scene.path);
+                    SceneManager.UnloadSceneAsync(scene.Path);
                 }
-                else if(scene.isActive)
+                else if(scene.IsActive)
                 {
-                    SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneUtility.GetBuildIndexByScenePath(scene.path)));
+                    SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneUtility.GetBuildIndexByScenePath(scene.Path)));
                 }
             });
-            GameUtils.CrossFade(true, 2, () =>
+            GameUtils.CrossFadeCamera(true, 5, () =>
             {
                 currentTimestate.onStarted.Invoke();
             });

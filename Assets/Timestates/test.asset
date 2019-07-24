@@ -10,9 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 361d7e56d76d6a34b9cd4c077c1879a6, type: 3}
-  m_Name: test2
+  m_Name: test
   m_EditorClassIdentifier: 
   sceneSetups:
   - path: Assets/Scenes/Test.unity
     isActive: 1
+    isLoaded: 1
+  - path: Assets/Scenes/MultisceneTest.unity
+    isActive: 0
     isLoaded: 1

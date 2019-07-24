@@ -36,41 +36,41 @@ public class TimestateCreator : EditorWindow
                 for (int i = 0; i < timeStateScriptableObject.sceneSetups.Count; i++)
                 {
                     EditorGUI.BeginChangeCheck();
-                    string tempPath = AssetDatabase.GetAssetPath(EditorGUILayout.ObjectField(string.Format("Scene {0}", i), AssetDatabase.LoadAssetAtPath<SceneAsset>(timeStateScriptableObject.sceneSetups[i].path), typeof(SceneAsset), false) as SceneAsset);
+                    string tempPath = AssetDatabase.GetAssetPath(EditorGUILayout.ObjectField(string.Format("Scene {0}", i), AssetDatabase.LoadAssetAtPath<SceneAsset>(timeStateScriptableObject.sceneSetups[i].Path), typeof(SceneAsset), false) as SceneAsset);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        if (tempPath == "" && (timeStateScriptableObject.sceneSetups[i].path != "" && timeStateScriptableObject.sceneSetups[i].path != null))
+                        if (tempPath == "" && (timeStateScriptableObject.sceneSetups[i].Path != "" && timeStateScriptableObject.sceneSetups[i].Path != null))
                         {
                             Debug.LogWarning("You cannot set a previous scene to none, that could potentially cause issues. Reverting...");
                         }
-                        else if (timeStateScriptableObject.sceneSetups.Exists((scene) => { return scene.path == tempPath; }))
+                        else if (timeStateScriptableObject.sceneSetups.Exists((scene) => { return scene.Path == tempPath; }))
                         {
                             Debug.LogWarning("You have already added that scene. Reverting...");
 
                         }
                         else if (tempPath != "" && tempPath != null)
                         {
-                            timeStateScriptableObject.sceneSetups[i].path = tempPath;
+                            timeStateScriptableObject.sceneSetups[i].Path = tempPath;
                         }
                     }
-                    EditorGUI.BeginDisabledGroup(timeStateScriptableObject.sceneSetups[i].path == null);
-                    timeStateScriptableObject.sceneSetups[i].isLoaded = EditorGUILayout.ToggleLeft("Is Loaded", timeStateScriptableObject.sceneSetups[i].isLoaded);
+                    EditorGUI.BeginDisabledGroup(timeStateScriptableObject.sceneSetups[i].Path == null);
+                    timeStateScriptableObject.sceneSetups[i].IsLoaded = EditorGUILayout.ToggleLeft("Is Loaded", timeStateScriptableObject.sceneSetups[i].IsLoaded);
                     EditorGUI.BeginChangeCheck();
-                    timeStateScriptableObject.sceneSetups[i].isActive = EditorGUILayout.ToggleLeft("Is Master", timeStateScriptableObject.sceneSetups[i].isActive);
+                    timeStateScriptableObject.sceneSetups[i].IsActive = EditorGUILayout.ToggleLeft("Is Master", timeStateScriptableObject.sceneSetups[i].IsActive);
                     if (EditorGUI.EndChangeCheck())
                     {
                         timeStateScriptableObject.sceneSetups.ForEach((scene) =>
                         {
                             if(scene != timeStateScriptableObject.sceneSetups[i])
                             {
-                                scene.isActive = false;
+                                scene.IsActive = false;
                             }
                         });
                     }
                     EditorGUI.EndDisabledGroup();
                 }
                 EditorGUILayout.BeginHorizontal();
-                EditorGUI.BeginDisabledGroup(timeStateScriptableObject.sceneSetups[timeStateScriptableObject.sceneSetups.Count - 1].path == null);
+                EditorGUI.BeginDisabledGroup(timeStateScriptableObject.sceneSetups[timeStateScriptableObject.sceneSetups.Count - 1].Path == null);
                 if (GUILayout.Button("Add Scene"))
                 {
                     timeStateScriptableObject.sceneSetups.Add(new SceneSetup());
@@ -86,7 +86,7 @@ public class TimestateCreator : EditorWindow
                 EditorGUI.indentLevel--;
             }
         }
-        EditorGUI.BeginDisabledGroup(timeStateName == "" || (!useCurrentSceneSetup && timeStateScriptableObject.sceneSetups[0].path == null));
+        EditorGUI.BeginDisabledGroup(timeStateName == "" || (!useCurrentSceneSetup && timeStateScriptableObject.sceneSetups[0].Path == null));
         if (GUILayout.Button("Create Timestate"))
         {
             if (useCurrentSceneSetup)
@@ -101,7 +101,9 @@ public class TimestateCreator : EditorWindow
             {
                 AssetDatabase.CreateFolder("Assets", "Timestates");
             }
-            AssetDatabase.CreateAsset(timeStateScriptableObject, AssetDatabase.GenerateUniqueAssetPath(string.Format(@"Assets/Timestates/{0}.asset", timeStateName)));
+            string timestatePath = AssetDatabase.GenerateUniqueAssetPath(string.Format(@"Assets/Timestates/{0}.asset", timeStateName));
+            AssetDatabase.CreateAsset(timeStateScriptableObject, timestatePath);
+            AssetImporter.GetAtPath(timestatePath).SetAssetBundleNameAndVariant("timestates", "");
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             this.Close();

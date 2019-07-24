@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameData
 {
-    public static TimestateManager timeStateManager;
+    public static TimestateManager timeStateManager = new TimestateManager();
 
     public static List<Player> players = new List<Player>();
 

@@ -15,20 +15,23 @@ public abstract class Interactable : MonoBehaviour
     static GameObject currentlySelected;
     static bool isOnObject;
     GameObject contextPanel;
-    GameObject contextPanelPrefab;
+    static GameObject contextPanelPrefab;
     public string buttonTrigger = "LeftClick";
     bool trackMouseClicks;
-    GameObject contextButtonPrefab;
+    static GameObject contextButtonPrefab;
     GameObject contextButton;
+    static AssetBundle contextBundle;
     void Start()
     {
-        AssetBundle uiBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "AssetBundles/prefabs/ui/contextmenu"));
-        contextButtonPrefab = uiBundle.LoadAsset<GameObject>("Context Menu Button");
-        contextPanelPrefab = uiBundle.LoadAsset<GameObject>("Context Menu Panel");
+        if (!contextBundle)
+        {
+            contextBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "AssetBundles/prefabs/ui/contextmenu"));
+            contextButtonPrefab = contextBundle.LoadAsset<GameObject>("Context Menu Button");
+            contextPanelPrefab = contextBundle.LoadAsset<GameObject>("Context Menu Panel");
+        }
         //One line if statement
         trackMouseClicks = buttonTrigger.ToLower().Contains("click") ? true : false;
         GetComponent<cakeslice.Outline>().eraseRenderer = true;
-        uiBundle.Unload(false);
     }
 
     void Update()

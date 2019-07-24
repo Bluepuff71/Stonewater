@@ -7,7 +7,7 @@ public class TimestateCreator : EditorWindow
 {
     string timeStateName = "";
     bool useCurrentSceneSetup;
-    TimeStateScriptableObject timeStateScriptableObject;
+    TimestateScriptableObject timeStateScriptableObject;
     bool sceneFoldout;
 
     [MenuItem("Bluepuff/Create Timestate")]
@@ -18,7 +18,7 @@ public class TimestateCreator : EditorWindow
 
     private void OnEnable()
     {
-        timeStateScriptableObject = CreateInstance<TimeStateScriptableObject>();
+        timeStateScriptableObject = CreateInstance<TimestateScriptableObject>();
         timeStateScriptableObject.sceneSetups = new List<SceneSetup>();
         timeStateScriptableObject.sceneSetups.Add(new SceneSetup());
     }
@@ -92,7 +92,11 @@ public class TimestateCreator : EditorWindow
             {
                 timeStateScriptableObject.sceneSetups = new List<SceneSetup>(EditorSceneManager.GetSceneManagerSetup());
             }
-            AssetDatabase.CreateAsset(timeStateScriptableObject, AssetDatabase.GenerateUniqueAssetPath(string.Format("Assets/{0}.asset", timeStateName)));
+            if (!AssetDatabase.IsValidFolder(@"Assets/Resources/Timestates"))
+            {
+                AssetDatabase.CreateFolder(@"Assets/Resources", "Timestates");
+            }
+            AssetDatabase.CreateAsset(timeStateScriptableObject, AssetDatabase.GenerateUniqueAssetPath(string.Format(@"Assets/Resources/Timestates/{0}.asset", timeStateName)));
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             this.Close();

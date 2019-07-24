@@ -1,44 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.Events;
 
-public abstract class TimeState : MonoBehaviour
+public class Timestate
 {
-    public List<TimeState> subTimeStates;
+    public readonly TimestateScriptableObject timestateScriptableObject;
+    public readonly Action onStarted;
+    public readonly Action onFinished;
 
-    protected abstract void onStateStarted();
-
-    protected abstract void onStateEnded();
-
-    private bool hasFinished;
-
-    public void StartState(bool ignoreHasFinished = false)
+    public Timestate(string timeStateName, Action onStarted, Action onFinished)
     {
-        if (!hasFinished || ignoreHasFinished)
-        {
-            onStateStarted();
-        }
-        foreach(TimeState timeState in subTimeStates)
-        {
-            timeState.StartState();
-        }
-        if (!hasFinished || ignoreHasFinished)
-        {
-            onStateEnded();
-            hasFinished = true;
-        }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        this.timestateScriptableObject = Resources.Load<TimestateScriptableObject>(string.Format(@"Timestates\{0}.asset", timeStateName));
+        this.onStarted = onStarted;
+        this.onFinished = onFinished;
     }
 }

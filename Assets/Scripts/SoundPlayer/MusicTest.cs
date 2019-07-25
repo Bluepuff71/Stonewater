@@ -12,11 +12,11 @@ public class MusicTest : MonoBehaviour
 
     IEnumerator MusicWait()
     {
-        GetComponent<SoundPlayer>().Play();
+        GetComponent<SoundPlayer>().PlayAsync();
         yield return new WaitForSeconds(5f);
-        GetComponent<SoundPlayer>().Stop();
+        GetComponent<SoundPlayer>().StopAsync();
         yield return new WaitForSeconds(5f);
-        GetComponent<SoundPlayer>().Play();
+        GetComponent<SoundPlayer>().PlayAsync();
     }
 
     // Update is called once per frame

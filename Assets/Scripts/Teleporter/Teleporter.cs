@@ -90,7 +90,7 @@ public class Teleporter : Interactable
             }
             if (currentRoom.music != connectingRoom.music)
             {
-                GameData.mainSoundPlayer.Stop(GameData.globalFadeTime);
+                GameData.mainSoundPlayer.StopAsync(GameData.globalFadeTime);
             }
             GameUtils.CrossFadeCamera(false, GameData.globalFadeTime, () =>
             {

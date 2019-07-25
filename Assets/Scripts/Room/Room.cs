@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UniRx.Async;
 
 public class Room : MonoBehaviour
 {
@@ -38,7 +39,7 @@ public class Room : MonoBehaviour
         {
             if (music.GetTrackAmount() != 0)
             {
-                GameData.mainSoundPlayer.SwitchTape(music);
+                GameData.mainSoundPlayer.SwitchTape(music).Forget();
             }
         }
     }
@@ -52,7 +53,7 @@ public class Room : MonoBehaviour
         //MUSIC SWITCHING
         if (music != toRoom.music)
         {
-            GameData.mainSoundPlayer.SwitchTape(toRoom.music);
+            GameData.mainSoundPlayer.SwitchTape(toRoom.music).Forget();
         }
         //else
         //{

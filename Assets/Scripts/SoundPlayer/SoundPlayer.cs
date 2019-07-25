@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx.Async;
 
 //The sound player is a way of playing a playlist of tracks, there should be no way to choose which song to play
 public class SoundPlayer : MonoBehaviour
@@ -24,11 +25,11 @@ public class SoundPlayer : MonoBehaviour
     {
         if (!audioSource.isPlaying && !wasStopped)
         {
-            NextTrack();
+            NextTrack().Forget();
         }
     }
 
-    public void Play(float fadeInLength = .1f)
+    public async UniTask PlayAsync(float fadeInLength = .1f)
     {
         if (audioSource.isPlaying)
         {
@@ -37,11 +38,17 @@ public class SoundPlayer : MonoBehaviour
         else
         {
             wasStopped = false;
-            audioSource.clip = tape.GetCurrentTrack().audioClip;
-            audioSource.time = tape.TrackLocation;
-            audioSource.volume = 0;
-            CrossFadeSound.CrossFadeClip(audioSource, tape.GetCurrentTrack().volume, fadeInLength);
-            audioSource.Play();
+            if (tape == null)
+            {
+                Debug.LogError("No tape was found. Make sure you load a tape using SwitchTape() before you call play!");
+            } else
+            {
+                audioSource.clip = tape.GetCurrentTrack().audioClip;
+                audioSource.time = tape.TrackLocation;
+                audioSource.volume = 0;
+                await CrossFadeSound.CrossFadeClipAsync(audioSource, tape.GetCurrentTrack().volume, fadeInLength);
+                audioSource.Play();
+            }
         }
     }
 
@@ -64,11 +71,11 @@ public class SoundPlayer : MonoBehaviour
         QuickPlay(new AudioClipWithVolume(audioClip, 1));
     }
 
-    public void SwitchTape(Tape toTape, bool playWhenSwitched = true)
+    public async UniTask SwitchTape(Tape toTape, bool playWhenSwitched = true)
     {
         if (!wasStopped)
         {
-            Stop();
+            await StopAsync();
         }
         //if (continueIfSameTrackExists)
         //{
@@ -77,11 +84,11 @@ public class SoundPlayer : MonoBehaviour
         tape = toTape;
         if (playWhenSwitched)
         {
-            Play();
+            await PlayAsync();
         }
     }
 
-    private void NextTrack()
+    private async UniTask NextTrack()
     {
         if (tape.AtEndOfTape())
         {
@@ -92,26 +99,34 @@ public class SoundPlayer : MonoBehaviour
             else
             {
                 Debug.LogWarning("No more tracks found. Stopping tape.");
-                Stop();
+                await StopAsync();
             }
         } else
         {
             tape.LoadNextTrack();
-            Play(0);
+            await PlayAsync(0);
         }
     }
 
-    public void Stop(float fadeOutLength = .1f)
+    public async UniTask StopAsync(float fadeOutLength = .1f)
     {
-        if (tape.PersistTracks)
+        if(tape == null)
         {
-            tape.TrackLocation = audioSource.time;
+            Debug.LogError("You tried to stop a tape but no tape exists!");
         }
         else
         {
-            tape.RestartTape();
+            if (tape.PersistTracks)
+            {
+                tape.TrackLocation = audioSource.time;
+            }
+            else
+            {
+                tape.RestartTape();
+            }
+            wasStopped = true;
+            await CrossFadeSound.CrossFadeClipAsync(audioSource, 0, fadeOutLength);
+            audioSource.Stop();
         }
-        wasStopped = true;
-        CrossFadeSound.CrossFadeClip(audioSource, 0, fadeOutLength, () => audioSource.Stop());
     }
 }

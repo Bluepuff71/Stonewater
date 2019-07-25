@@ -2,10 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TimestateTest : MonoBehaviour
+public class TimestateTest : Interactable
 {
     private void OnTriggerEnter(Collider other)
     {
-        GameData.timeStateManager.SwitchTo(new Timestate("test2", () => { Debug.Log("Test2 Started"); }, () => { Debug.Log("Test2 Finished"); }));
+        test();
+    }
+
+    [Bluepuff.ContextMenu("Switch Scenes")]
+    private void test()
+    {
+        TimestateManager.Load(new Timestate("test2", () => { Debug.Log("Test2 Started"); }, () => { Debug.Log("Test2 Finished"); }));
     }
 }

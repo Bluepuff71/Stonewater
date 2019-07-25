@@ -1,44 +1,60 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class TimestateManager
+public static class TimestateManager
 {
-    private Timestate currentTimestate = null;
-    public void SwitchTo(Timestate to)
+    private static Timestate currentTimestate = null;
+    //public static void SwitchTo(Timestate to)
+    //{
+    //    GameUtils.CrossFadeCamera(false, 5, () =>
+    //    {
+    //        //TODO switch the audio to the new scene
+    //        if(currentTimestate != null)
+    //        {
+    //            currentTimestate.onFinished.Invoke();
+    //        }
+    //        currentTimestate = to;
+
+    //        Transition transition = GameObject.Find("Canvas").GetComponentInChildren<Transition>();
+    //        transition.StartCoroutine(transition.DoTransition(currentTimestate.timestateScriptableObject.sceneSetups));
+    //        GameUtils.CrossFadeCamera(true, 5, () =>
+    //        {
+    //            currentTimestate.onStarted.Invoke();
+    //        });
+    //    });
+    //}
+
+    //private static IEnumerator LoadTransitionScene()
+    //{
+    //    AsyncOperation loadTransitionOperation = SceneManager.LoadSceneAsync("Transition", LoadSceneMode.Single);
+    //    yield return WaitUntil(loadTransitionOperation.isDone);
+    //}
+
+    public static void Load(Timestate timestate)
     {
+        MonoBehaviour monoBehaviour = Camera.main.GetComponent<MonoBehaviour>();
         GameUtils.CrossFadeCamera(false, 5, () =>
         {
-            //TODO switch the audio to the new scene
-            if(currentTimestate != null)
+            if (currentTimestate != null)
             {
                 currentTimestate.onFinished.Invoke();
             }
-            //load in the Transition scene (it is always there, just unloaded) and play the scene transition
-            for (int i = 0; i < SceneManager.sceneCount; i++)
-            {
-                SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i));
-            }
-            currentTimestate = to;
-            currentTimestate.timestateScriptableObject.sceneSetups.ForEach((scene) =>
-            {
-                SceneManager.LoadSceneAsync(scene.Path,LoadSceneMode.Additive);
-                if(!scene.IsLoaded)
-                {
-                    SceneManager.UnloadSceneAsync(scene.Path);
-                }
-                else if(scene.IsActive)
-                {
-                    SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneUtility.GetBuildIndexByScenePath(scene.Path)));
-                }
-            });
-            GameUtils.CrossFadeCamera(true, 5, () =>
-            {
-                currentTimestate.onStarted.Invoke();
-            });
+            currentTimestate = timestate;
+            monoBehaviour.StartCoroutine(LoadTransitionCOR());
         });
+    }
+    //private static IEnumerator LoadTimestateCOR(Timestate timestate)
+    //{
+        
+    //}
+
+    private static IEnumerator LoadTransitionCOR()
+    {
+        AsyncOperation loadTransitionOperation = SceneManager.LoadSceneAsync("Transition", LoadSceneMode.Single);
+        yield return new WaitUntil(() => loadTransitionOperation.isDone);
     }
 }

@@ -7,6 +7,7 @@ TagManager:
   - UI
   - ContextMenu
   - Marker
+  - Fade
   layers:
   - Default
   - TransparentFX

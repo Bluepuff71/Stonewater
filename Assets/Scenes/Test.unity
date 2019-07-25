@@ -199,7 +199,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7212058}
   m_CullTransparentMesh: 0
---- !u!84 &61751488
+--- !u!84 &120024290
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -336,6 +336,7 @@ GameObject:
   - component: {fileID: 182415454}
   - component: {fileID: 182415453}
   - component: {fileID: 182415452}
+  - component: {fileID: 182415457}
   - component: {fileID: 182415456}
   m_Layer: 0
   m_Name: Cylinder
@@ -429,6 +430,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51de72f0a70a44243bc6019475f82a85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonTrigger: LeftClick
+--- !u!114 &182415457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182415451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+  originalLayer: 0
+  originalMaterials: []
 --- !u!1 &271802283
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,8 +509,8 @@ MonoBehaviour:
   sourceCamera: {fileID: 271802289}
   outlineCamera: {fileID: 612548371}
   outlineShaderMaterial: {fileID: 0}
-  renderTexture: {fileID: 1719303196}
-  extraRenderTexture: {fileID: 61751488}
+  renderTexture: {fileID: 120024290}
+  extraRenderTexture: {fileID: 1471314183}
 --- !u!81 &271802288
 AudioListener:
   m_ObjectHideFlags: 0
@@ -781,7 +799,7 @@ MonoBehaviour:
   eraseRenderer: 0
   originalLayer: 0
   originalMaterials: []
---- !u!84 &371517922
+--- !u!84 &603003390
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -879,7 +897,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 0
   m_RenderingPath: 1
-  m_TargetTexture: {fileID: 1719303196}
+  m_TargetTexture: {fileID: 120024290}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
@@ -1150,7 +1168,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 0
   m_RenderingPath: 1
-  m_TargetTexture: {fileID: 1447747193}
+  m_TargetTexture: {fileID: 1681094369}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
@@ -1287,8 +1305,8 @@ MonoBehaviour:
   sourceCamera: {fileID: 1208498015}
   outlineCamera: {fileID: 1070087634}
   outlineShaderMaterial: {fileID: 0}
-  renderTexture: {fileID: 1447747193}
-  extraRenderTexture: {fileID: 371517922}
+  renderTexture: {fileID: 1681094369}
+  extraRenderTexture: {fileID: 603003390}
 --- !u!1001 &1265381373
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1357,7 +1375,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 9153253719810122411, guid: 8a9007b79c9b44342aefa39f36d16529, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8a9007b79c9b44342aefa39f36d16529, type: 3}
---- !u!84 &1447747193
+--- !u!84 &1471314183
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1449,7 +1467,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &1719303196
+--- !u!84 &1681094369
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1556,7 +1574,7 @@ GameObject:
   - component: {fileID: 1879781630}
   m_Layer: 5
   m_Name: Image
-  m_TagString: Untagged
+  m_TagString: Fade
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1581572075
+CRC: 3489992328
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 64cd98db1368f7960270384f840798bb
+    Hash: 3f1be2e60dc1abca0cd839920bfbf15c
   TypeTreeHash:
     serializedVersion: 2
-    Hash: c82d58e0440996350a9d2cfa2ea71712
+    Hash: e61786c5210f34ddc85ddd5b29823700
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -79,6 +79,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 62d0f4ecb70324a4ba0cca3248858b9e, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 7f5cc7040a13b3a4cabc6e192cc62dca, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 612cfa1b37f8b3e46822c410114a143e, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -100,6 +102,7 @@ ClassTypes:
 Assets:
 - Assets/Scenes/SampleScene.unity
 - Assets/Scenes/Test.unity
+- Assets/Scenes/Transition.unity
 - Assets/Scenes/MultisceneTest.unity
 Dependencies:
 - C:/Users/emery/Documents/GitHub/DDWorld/Assets/AssetBundles/materials

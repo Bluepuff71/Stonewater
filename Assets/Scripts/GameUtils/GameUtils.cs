@@ -32,6 +32,14 @@ public static class GameUtils
     }
 
     public static void CrossFadeCamera(bool isFadingIn, float duration, System.Action callback) {
-        GameData.ui.GetComponentInChildren<Image>().CrossFadeAlphaWithCallBack(isFadingIn ? 0 : 1, duration, callback);
+        GameObject fadeImage = GameObject.FindGameObjectWithTag("Fade");
+        if (fadeImage)
+        {
+            fadeImage.GetComponent<Image>().CrossFadeAlphaWithCallBack(isFadingIn ? 0 : 1, duration, callback);
+        }
+        else
+        {
+            Debug.LogError("Attempted to start fade but no image was found (Make sure it's tagged)");
+        }
     }
 }

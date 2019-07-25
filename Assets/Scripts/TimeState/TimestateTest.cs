@@ -1,17 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx.Async;
 
 public class TimestateTest : Interactable
 {
     private void OnTriggerEnter(Collider other)
     {
-        test();
+        test().Forget();
     }
 
     [Bluepuff.ContextMenu("Switch Scenes")]
-    private void test()
+    private async UniTaskVoid test()
     {
-        TimestateManager.Load(new Timestate("test2", () => { Debug.Log("Test2 Started"); }, () => { Debug.Log("Test2 Finished"); }));
+        await TimestateManager.LoadAsync(new Timestate("test2", () => { Debug.Log("Test2 Started"); }, () => { Debug.Log("Test2 Finished"); }));
     }
 }

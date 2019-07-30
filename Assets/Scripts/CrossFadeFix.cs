@@ -20,7 +20,7 @@ public static class CrossFadeFix
         {
             counter += Time.deltaTime;
             img.color = Color.Lerp(currentColor, visibleColor, counter / duration);
-            await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
+            await UniTask.Yield();
         }
 
     }

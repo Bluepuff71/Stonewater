@@ -18,7 +18,7 @@ public static class CrossFadeSound
             {
                 counter += Time.deltaTime;
                 audioSource.volume = Mathf.Lerp(currentVolume, volume, counter / duration);
-                await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
+                await UniTask.Yield();
             }
         }
         else

@@ -70,8 +70,8 @@ public static class GameUtils
 
     public static async UniTask RefreshGameData()
     {
-        await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
         GameData.ui = GameObject.FindGameObjectWithTag("UI");
         GameData.mainSoundPlayer = GameData.ui.GetComponent<SoundPlayer>();
+        await UniTask.Yield();
     }
 }

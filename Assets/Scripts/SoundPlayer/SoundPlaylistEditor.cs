@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,15 +12,16 @@ public class SoundPlaylistEditor : Editor
     private SoundPlaylist soundPlaylist;
     private bool musicHeaderFoldout = false;
     private bool fadeFoldout = false;
+
     private void Awake()
     {
         soundPlaylist = (SoundPlaylist)target;
     }
+
     public override void OnInspectorGUI()
     {
         #region Music Playlist
         //soundPlaylist.audioSource = EditorGUILayout.ObjectField("Audio Source", soundPlaylist.audioSource, typeof(AudioSource), allowSceneObjects: true) as AudioSource;
-
 
         musicHeaderFoldout = EditorGUILayout.Foldout(musicHeaderFoldout, "Music");
         if (musicHeaderFoldout)
@@ -40,7 +42,7 @@ public class SoundPlaylistEditor : Editor
             {
                 if (GUILayout.Button("Add Track"))
                 {
-                    soundPlaylist.tape.AddTrack(new AudioClipWithVolume(null, .5f));
+                    soundPlaylist.tape.AddTrack(new AudioClipWithVolume(null, 1));
                 }
             }
             if (soundPlaylist.tape.GetTrackAmount() > 0)
@@ -59,6 +61,11 @@ public class SoundPlaylistEditor : Editor
             }
         }
         #endregion
+        if (GUI.changed)
+        {
+            EditorUtility.SetDirty(soundPlaylist);
+            EditorSceneManager.MarkSceneDirty(soundPlaylist.gameObject.scene);
+        }
     }
 }
 #endif

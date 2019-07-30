@@ -8,6 +8,7 @@ TagManager:
   - ContextMenu
   - Marker
   - Fade
+  - TeleporterText
   layers:
   - Default
   - TransparentFX

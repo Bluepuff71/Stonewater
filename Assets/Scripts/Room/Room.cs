@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UniRx.Async;
 
+[RequireComponent(typeof(SoundPlaylist))]
 public class Room : MonoBehaviour
 {
     private Camera roomCamera;
@@ -11,25 +12,20 @@ public class Room : MonoBehaviour
     
     public UnityEvent OnEnterRoom;
 
-    private AudioSource audioSource;
     [HideInInspector]
-    public Tape music;
+    public SoundPlaylist soundPlaylist;
 
-    void Awake()
+    // Start is called before the first frame update
+    void Start()
     {
         if (!roomCamera)
         {
             roomCamera = GetComponentInChildren<Camera>();
         }
-        if (!audioSource)
+        if (!soundPlaylist)
         {
-            audioSource = GetComponentInChildren<AudioSource>();
+            soundPlaylist = GetComponent<SoundPlaylist>();
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
         if (Camera.main != roomCamera)
         {
             roomCamera.gameObject.tag = "MainCamera";
@@ -37,23 +33,24 @@ public class Room : MonoBehaviour
         }
         else
         {
-            if (music.GetTrackAmount() != 0)
+            if (soundPlaylist.tape.GetTrackAmount() != 0)
             {
-                GameData.mainSoundPlayer.SwitchTape(music).Forget();
+                GameData.mainSoundPlayer.SwitchTape(soundPlaylist.tape).Forget();
+
             }
         }
     }
 
-    public void ChangeRoom(Room toRoom)
+    public async UniTask ChangeRoom(Room toRoom)
     {
         //CAMERA SWITCHING
         Camera.main.gameObject.SetActive(false);
         toRoom.roomCamera.gameObject.SetActive(true);
 
         //MUSIC SWITCHING
-        if (music != toRoom.music)
+        if (soundPlaylist != toRoom.soundPlaylist)
         {
-            GameData.mainSoundPlayer.SwitchTape(toRoom.music).Forget();
+            await GameData.mainSoundPlayer.SwitchTape(toRoom.soundPlaylist.tape, playWhenSwitched: false);
         }
         //else
         //{

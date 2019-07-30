@@ -6,7 +6,7 @@ using UnityEngine;
 public class Tape
 {
     [SerializeField]
-    private List<AudioClipWithVolume> tracks;
+    private List<AudioClipWithVolume> tracks = new List<AudioClipWithVolume>();
     public bool ShouldLoop { get => shouldLoop; set => shouldLoop = value; }
     public bool PersistTracks { get => persistTracks; set => persistTracks = value; }
     public float TrackLocation { get => trackLocation; set => trackLocation = value; }
@@ -21,17 +21,6 @@ public class Tape
     #endregion
     [SerializeField]
     private bool shouldLoop;
-
-
-    public Tape(List<AudioClipWithVolume> _tracks, bool _shouldLoop = false, bool _persistTracks = false)
-    {
-        //deep copy
-        this.tracks = new List<AudioClipWithVolume>(_tracks);
-        this.shouldLoop = _shouldLoop;
-        this.persistTracks = _persistTracks;
-        this.trackIndex = 0;
-        this.trackLocation = 0;
-    }
 
     public void AddTrack(AudioClipWithVolume track)
     {

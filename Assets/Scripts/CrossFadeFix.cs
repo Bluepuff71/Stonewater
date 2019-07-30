@@ -16,7 +16,6 @@ public static class CrossFadeFix
 
 
         float counter = 0;
-
         while (counter < duration)
         {
             counter += Time.deltaTime;

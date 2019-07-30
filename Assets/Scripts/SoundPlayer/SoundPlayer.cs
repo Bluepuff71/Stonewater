@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UniRx.Async;
 
 //The sound player is a way of playing a playlist of tracks, there should be no way to choose which song to play
@@ -18,6 +16,7 @@ public class SoundPlayer : MonoBehaviour
         {
             audioSource = GetComponent<AudioSource>();
         }
+        audioSource.playOnAwake = false;
     }
 
     public async UniTaskVoid PlayAsync(float fadeInLength = .1f)
@@ -40,6 +39,7 @@ public class SoundPlayer : MonoBehaviour
                 {
                     if (firstLoop)
                     {
+                        firstLoop = false;
                         audioSource.clip = tape.GetCurrentTrack().audioClip;
                         audioSource.time = tape.TrackLocation;
                         audioSource.volume = 0;
@@ -53,7 +53,7 @@ public class SoundPlayer : MonoBehaviour
                         audioSource.volume = tape.GetCurrentTrack().volume;
                         audioSource.Play();
                     }
-                    await UniTask.WaitWhile(() => audioSource.isPlaying && !wasStopped);
+                    await UniTask.WaitUntil(() => !audioSource.isPlaying || wasStopped);
                     if (!wasStopped)
                     {
                         await NextTrack();
@@ -76,7 +76,7 @@ public class SoundPlayer : MonoBehaviour
         QuickPlay(new AudioClipWithVolume(audioClip, 1));
     }
 
-    public async UniTask SwitchTape(Tape toTape, bool playWhenSwitched = true)
+    public async UniTask SwitchTape(Tape toTape, bool playWhenSwitched)
     {
         if (!wasStopped)
         {

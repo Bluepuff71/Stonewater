@@ -1,53 +1,39 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UniRx.Async;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public static class TimestateManager
 {
     private static Timestate currentTimestate = null;
-    //public static void SwitchTo(Timestate to)
-    //{
-    //    GameUtils.CrossFadeCamera(false, 5, () =>
-    //    {
-    //        //TODO switch the audio to the new scene
-    //        if(currentTimestate != null)
-    //        {
-    //            currentTimestate.onFinished.Invoke();
-    //        }
-    //        currentTimestate = to;
-
-    //        Transition transition = GameObject.Find("Canvas").GetComponentInChildren<Transition>();
-    //        transition.StartCoroutine(transition.DoTransition(currentTimestate.timestateScriptableObject.sceneSetups));
-    //        GameUtils.CrossFadeCamera(true, 5, () =>
-    //        {
-    //            currentTimestate.onStarted.Invoke();
-    //        });
-    //    });
-    //}
-
-    //private static IEnumerator LoadTransitionScene()
-    //{
-    //    AsyncOperation loadTransitionOperation = SceneManager.LoadSceneAsync("Transition", LoadSceneMode.Single);
-    //    yield return WaitUntil(loadTransitionOperation.isDone);
-    //}
-
-
-        //TODO Refresh gamedata on new scene loaded
-    public static async UniTask LoadAsync(Timestate timestate)
+    public static async UniTask SwitchTo(Timestate timestate, System.Action transition)
     {
-        await GameUtils.CrossFadeCameraAsync(false, 5, true);
-        if (currentTimestate != null)
+        await GameUtils.FadeCameraAsync(false, 5, true);  //Fade the scene
+        if (currentTimestate != null) //Invoke the finished event
         {
-            currentTimestate.onFinished.Invoke();
+            await currentTimestate.onFinished.OnInvokeAsync(new CancellationToken());
         }
-        currentTimestate = timestate;
-        await SceneManager.LoadSceneAsync("Transition");
-        await GameUtils.RefreshGameData();
-        await GameUtils.CrossFadeCameraAsync(true, 3, true);
+        currentTimestate = timestate; //set the current timestate
+        await SceneManager.LoadSceneAsync("Transition"); //load the transition scene
+        await GameUtils.RefreshGameData(); //refresh the GameData so that it can be referenced properly
+        await GameUtils.FadeCameraAsync(true, 5, true); //fade in the scene
+        UniTask invokeTransition = UniTask.Run(transition);//invoke the transition event and begin loading the timestate
+        UniTask loadTimestate = LoadAsync();
+        await UniTask.WhenAll(invokeTransition, loadTimestate); //Wait until they are both done
+        await GameUtils.FadeCameraAsync(false, 3, true); //fade out the transition scene
+        await SceneManager.UnloadSceneAsync("Transition"); //unload the transition scene
+        await GameUtils.RefreshGameData(); //refresh the game data so that it reflects the new scene 
+        await GameUtils.FadeCameraAsync(true, 5, true); //fade in the scene
+        timestate.onStarted.Invoke(); //invoke the started event
+    }
+
+    private static async UniTask LoadAsync()
+    {
         foreach (SceneSetup scene in currentTimestate.timestateScriptableObject.sceneSetups)
         {
             if (scene.IsLoaded)
@@ -55,7 +41,6 @@ public static class TimestateManager
                 AsyncOperation sceneLoadTask = SceneManager.LoadSceneAsync(scene.Path, LoadSceneMode.Additive);
                 while (!sceneLoadTask.isDone)
                 {
-                    GameData.ui.GetComponentInChildren<Text>().text = string.Format("Loading Scene: {0}\n{1}% Completed", scene.Path, sceneLoadTask.progress * 100);
                     await UniTask.Yield();
                 }
                 if (scene.IsActive)
@@ -64,9 +49,5 @@ public static class TimestateManager
                 }
             }
         }
-        await GameUtils.CrossFadeCameraAsync(false, 3, true);
-        await SceneManager.UnloadSceneAsync("Transition");
-        await GameUtils.RefreshGameData();
-        await GameUtils.CrossFadeCameraAsync(true, 5, true);
     }
 }

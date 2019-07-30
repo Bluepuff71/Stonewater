@@ -21,17 +21,22 @@ public abstract class Interactable : MonoBehaviour
     static GameObject contextButtonPrefab;
     GameObject contextButton;
     static AssetBundle contextBundle;
+
+    void Awake()
+    {
+        //one line if statement
+        trackMouseClicks = buttonTrigger.ToLower().Contains("click") ? true : false;
+    }
+
     void Start()
     {
+        GetComponent<cakeslice.Outline>().eraseRenderer = true;
         if (!contextBundle)
         {
             contextBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "AssetBundles/prefabs/ui/contextmenu"));
             contextButtonPrefab = contextBundle.LoadAsset<GameObject>("Context Menu Button");
             contextPanelPrefab = contextBundle.LoadAsset<GameObject>("Context Menu Panel");
         }
-        //One line if statement
-        trackMouseClicks = buttonTrigger.ToLower().Contains("click") ? true : false;
-        GetComponent<cakeslice.Outline>().eraseRenderer = true;
     }
 
     void Update()
@@ -43,14 +48,22 @@ public abstract class Interactable : MonoBehaviour
                 DestroyCurrentButtons();
             }
         }
+        else if (Input.GetButtonDown(buttonTrigger))
+        {
+            if (currentlySelected == gameObject)
+            {
+                DestroyCurrentButtons();
+            }
+            else
+            {
+                CreateButtons();
+            }
+        }
     }
 
     void FixedUpdate()
     {
-        if (!trackMouseClicks && Input.GetButtonDown(buttonTrigger))
-        {
-            CreateButtons();
-        }
+        
     }
 
     void OnMouseEnter()

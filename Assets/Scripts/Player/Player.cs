@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
+public class OnConfirmPressedEvent : UnityEvent<Player> { }
 public class Player : MonoBehaviour
 {
     private CharacterController characterController;
@@ -12,6 +14,16 @@ public class Player : MonoBehaviour
     public float speed = 2.0f;
     public float rotationSpeed = 100.0f;
     public float gravity = 80.0F;
+
+    public UnityEvent<Player> onPressedConfirm;
+
+    private void Awake()
+    {
+        if(onPressedConfirm == null)
+        {
+            onPressedConfirm = new OnConfirmPressedEvent();
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +32,7 @@ public class Player : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         //Move all of this out of here and into a character select screen
         if(controllerNumber == -1)
@@ -87,6 +99,11 @@ public class Player : MonoBehaviour
             // Rotate around our y-axis
             //float heading = Mathf.Atan2(joyVector.x, joyVector.y);
             //transform.rotation = Quaternion.Euler(0f, heading * Mathf.Rad2Deg, 0f);
+            if (Input.GetButtonDown(string.Format("CONFIRM_{0}", controllerNumber)))
+            {
+                onPressedConfirm.Invoke(this);
+            }
         }
+        
     }
 }

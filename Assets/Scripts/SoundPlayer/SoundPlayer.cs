@@ -12,7 +12,7 @@ public class SoundPlayer : MonoBehaviour
     private bool wasStopped = true;
     private Tape tape;
 
-    private void Start()
+    void Awake()
     {
         if (!audioSource)
         {
@@ -20,16 +20,7 @@ public class SoundPlayer : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (!audioSource.isPlaying && !wasStopped)
-        {
-            NextTrack().Forget();
-        }
-    }
-
-    public async UniTask PlayAsync(float fadeInLength = .1f)
+    public async UniTaskVoid PlayAsync(float fadeInLength = .1f)
     {
         if (audioSource.isPlaying)
         {
@@ -37,33 +28,47 @@ public class SoundPlayer : MonoBehaviour
         }
         else
         {
-            wasStopped = false;
             if (tape == null)
             {
                 Debug.LogError("No tape was found. Make sure you load a tape using SwitchTape() before you call play!");
-            } else
+            }
+            else
             {
-                audioSource.clip = tape.GetCurrentTrack().audioClip;
-                audioSource.time = tape.TrackLocation;
-                audioSource.volume = 0;
-                await CrossFadeSound.CrossFadeClipAsync(audioSource, tape.GetCurrentTrack().volume, fadeInLength);
-                audioSource.Play();
+                bool firstLoop = true;
+                wasStopped = false;
+                while (!wasStopped)
+                {
+                    if (firstLoop)
+                    {
+                        audioSource.clip = tape.GetCurrentTrack().audioClip;
+                        audioSource.time = tape.TrackLocation;
+                        audioSource.volume = 0;
+                        audioSource.Play();
+                        await CrossFadeSound.CrossFadeClipAsync(audioSource, tape.GetCurrentTrack().volume, fadeInLength);
+                    }
+                    else
+                    {
+                        audioSource.clip = tape.GetCurrentTrack().audioClip;
+                        audioSource.time = 0;
+                        audioSource.volume = tape.GetCurrentTrack().volume;
+                        audioSource.Play();
+                    }
+                    await UniTask.WaitWhile(() => audioSource.isPlaying && !wasStopped);
+                    if (!wasStopped)
+                    {
+                        await NextTrack();
+                    }
+                }
             }
         }
     }
 
     public void QuickPlay(AudioClipWithVolume track)
     {
-        if (audioSource.isPlaying)
-        {
-            Debug.LogWarning("2 playing Soundplayers attached to the same audio source! Make sure to stop the soundplayer before playing another one!");
-        }
-        else
-        {
-            audioSource.clip = track.audioClip;
-            audioSource.volume = track.volume;
-            audioSource.Play();
-        }
+        audioSource.Stop();
+        audioSource.clip = track.audioClip;
+        audioSource.volume = track.volume;
+        audioSource.Play();
     }
 
     public void QuickPlay(AudioClip audioClip)
@@ -84,27 +89,31 @@ public class SoundPlayer : MonoBehaviour
         tape = toTape;
         if (playWhenSwitched)
         {
-            await PlayAsync();
+            PlayAsync().Forget();
         }
     }
 
     private async UniTask NextTrack()
     {
-        if (tape.AtEndOfTape())
+        //should not be called when the soundplayer is stopped
+        if (!wasStopped)
         {
-            if (tape.ShouldLoop)
+            if (tape.AtEndOfTape())
             {
-                tape.RestartTape();
+                if (tape.ShouldLoop)
+                {
+                    tape.RestartTape();
+                }
+                else
+                {
+                    Debug.LogWarning("No more tracks found. Stopping tape.");
+                    await StopAsync();
+                }
             }
             else
             {
-                Debug.LogWarning("No more tracks found. Stopping tape.");
-                await StopAsync();
+                tape.LoadNextTrack();
             }
-        } else
-        {
-            tape.LoadNextTrack();
-            await PlayAsync(0);
         }
     }
 
@@ -126,7 +135,10 @@ public class SoundPlayer : MonoBehaviour
             }
             wasStopped = true;
             await CrossFadeSound.CrossFadeClipAsync(audioSource, 0, fadeOutLength);
-            audioSource.Stop();
+            if (audioSource)
+            {
+                audioSource.Stop();
+            }
         }
     }
 }

@@ -32,30 +32,28 @@ public static class GameUtils
         return unavaliableNumbers;
     }
 
-    public static void CrossFadeCamera(bool isFadingIn, float duration, System.Action callback) {
-        GameObject fadeImage = GameObject.FindGameObjectWithTag("Fade");
-        if (fadeImage)
-        {
-            fadeImage.GetComponent<Image>().CrossFadeAlphaWithCallBack(isFadingIn ? 0 : 1, duration, callback);
-        }
-        else
-        {
-            Debug.LogError("Attempted to start fade but no image was found (Make sure it's tagged)");
-        }
-    }
 
-    public static async UniTask CrossFadeCameraAsync(bool isFadingIn, float duration, bool andSound)
+    public static async UniTask FadeCameraAsync(bool isFadingIn, float duration, bool andSound)
     {
-        GameObject fadeImage = GameObject.FindGameObjectWithTag("Fade");
-        if (fadeImage)
+        GameObject fadeImageObj = GameObject.FindGameObjectWithTag("Fade");
+        if (fadeImageObj)
         {
-            UniTask crossfade = fadeImage.GetComponent<Image>().CrossFadeAlphaAsync(isFadingIn ? 0 : 1, duration);
+            Image fadeImage = fadeImageObj.GetComponent<Image>();
+            if (isFadingIn)
+            {
+                fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 1);
+            }
+            else
+            {
+                fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 0);
+            }
+            UniTask crossfade = fadeImage.CrossFadeAlphaAsync(isFadingIn ? 0 : 1, duration);
             UniTask sound;
             if (andSound)
             {
                 if (isFadingIn)
                 {
-                    sound = GameData.mainSoundPlayer.PlayAsync(duration);
+                    GameData.mainSoundPlayer.PlayAsync(duration).Forget();
                 }
                 else
                 {

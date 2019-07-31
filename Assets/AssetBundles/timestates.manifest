@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 227247506
+CRC: 4062991638
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 7aa5c0cd89898af5c940ed6f0081a9f2
+    Hash: e2410411b6d53a9776bfec9a5ee23f75
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 912b2d00f206bdd7d09df2a9cf75e9d2
+    Hash: bc56e66d52bc4e8437d669aeaa4fd628
 HashAppended: 0
 ClassTypes:
 - Class: 114
@@ -15,5 +15,4 @@ ClassTypes:
   Script: {instanceID: 0}
 Assets:
 - Assets/Timestates/test2.asset
-- Assets/Timestates/test.asset
 Dependencies: []

@@ -133,8 +133,8 @@ public class SoundPlayer : MonoBehaviour
             {
                 tape.RestartTape();
             }
-            wasStopped = true;
             await CrossFadeSound.CrossFadeClipAsync(audioSource, 0, fadeOutLength);
+            wasStopped = true;
             if (audioSource)
             {
                 audioSource.Stop();

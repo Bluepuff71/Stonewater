@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using UniRx.Async;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -13,9 +10,9 @@ public static class TimestateManager
     private static Timestate currentTimestate = null;
 
     public static System.Func<UniTask> doTransition;
-    public static async UniTask SwitchTo(Timestate timestate)
+    public static async UniTask SwitchTo(Timestate timestate, string transitionScene = "Transition")
     {
-        AsyncOperation loadTransition = SceneManager.LoadSceneAsync("Transition"); //Begin loading the transition scene
+        AsyncOperation loadTransition = SceneManager.LoadSceneAsync(transitionScene); //Begin loading the transition scene
         loadTransition.allowSceneActivation = false;
         await GameUtils.FadeCameraAsync(false, 5, true);  //Fade the scene
         if (currentTimestate != null) //Invoke the finished event
@@ -45,10 +42,17 @@ public static class TimestateManager
 
     private static async UniTask FinishLoadingAsync(List<AsyncOperation> asyncOperations)
     {
-        foreach (AsyncOperation asyncOperation in asyncOperations)
+        for (int i = 0; i < asyncOperations.Count; i++)
         {
-            asyncOperation.allowSceneActivation = true;
-            await asyncOperation;
+            
+            asyncOperations[i].allowSceneActivation = true;
+            await asyncOperations[i];
+            if (i == 0)
+            {
+                await GameUtils.RefreshGameData();
+                Image fadeImage = GameObject.FindGameObjectWithTag("Fade").GetComponent<Image>();
+                fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 1);
+            }
         }
     }
 
@@ -62,13 +66,14 @@ public static class TimestateManager
             if (i == 0)
             {
                 sceneLoadTask = SceneManager.LoadSceneAsync(scenePaths[0], LoadSceneMode.Single);
+                sceneLoadTask.allowSceneActivation = false;
+                await UniTask.WaitUntil(() => Mathf.Approximately(sceneLoadTask.progress, .9f));
             }
             else
             {
                 sceneLoadTask = SceneManager.LoadSceneAsync(scenePaths[i], LoadSceneMode.Additive);
+                sceneLoadTask.allowSceneActivation = false;
             }
-            sceneLoadTask.allowSceneActivation = false;
-            await UniTask.WaitUntil(() => Mathf.Approximately(sceneLoadTask.progress, .9f));
             asyncOperations.Add(sceneLoadTask);
         }
         return asyncOperations;

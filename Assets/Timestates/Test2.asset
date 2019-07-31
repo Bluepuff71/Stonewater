@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 361d7e56d76d6a34b9cd4c077c1879a6, type: 3}
   m_Name: test2
   m_EditorClassIdentifier: 
-  sceneSetups:
-  - path: Assets/Scenes/Test.unity
-    isActive: 1
-    isLoaded: 1
+  scenePaths:
+  - Assets/Scenes/Test.unity
+  - Assets/Scenes/MultisceneTest.unity
+  - Assets/Scenes/SampleScene.unity

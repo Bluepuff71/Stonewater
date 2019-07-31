@@ -15,4 +15,3 @@ MonoBehaviour:
   scenePaths:
   - Assets/Scenes/Test.unity
   - Assets/Scenes/MultisceneTest.unity
-  - Assets/Scenes/SampleScene.unity

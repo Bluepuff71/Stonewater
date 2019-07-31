@@ -1,0 +1,20 @@
+ManifestFileVersion: 0
+CRC: 383129890
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 24e853170e9445ca684c314a75765009
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: a15026e7645264409a88f84f584030a1
+HashAppended: 0
+ClassTypes:
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+Assets:
+- Assets/Materials/Test.mat
+- Assets/Materials/Ground.mat
+- Assets/Materials/Teleporter.mat
+Dependencies: []

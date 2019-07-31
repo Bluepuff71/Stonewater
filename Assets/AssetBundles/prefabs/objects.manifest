@@ -1,0 +1,60 @@
+ManifestFileVersion: 0
+CRC: 2971523293
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 92a8127e0c8d24ee5067d0149cc6f02a
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 266ea30a09f08d737cf346fc524befb3
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 20
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 81
+  Script: {instanceID: 0}
+- Class: 82
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: a78da3f00f3328541b4526c0b0b5ec5c, type: 3}
+- Class: 114
+  Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: c375ab63bb67f1b4897b2ecad835239a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: c7068fa6c2e10fe4e9c6b2e194601c02, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 62d0f4ecb70324a4ba0cca3248858b9e, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 143
+  Script: {instanceID: 0}
+Assets:
+- Assets/Prefabs/Marker.prefab
+- Assets/Prefabs/Player.prefab
+- Assets/Prefabs/ArrivalPoint.prefab
+- Assets/Prefabs/Room.prefab
+Dependencies:
+- C:/Users/emery/Documents/GitHub/DDWorld/Assets/AssetBundles/materials

@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
+public class OnConfirmPressedEvent : UnityEvent<Player> { }
 public class Player : MonoBehaviour
 {
     private CharacterController characterController;
@@ -12,23 +14,30 @@ public class Player : MonoBehaviour
     public float speed = 2.0f;
     public float rotationSpeed = 100.0f;
     public float gravity = 80.0F;
-    private Vector3 moveDirection = Vector3.zero;
-    private Transform mainCameraTransform;
+
+    public UnityEvent<Player> onPressedConfirm;
+
+    private void Awake()
+    {
+        if(onPressedConfirm == null)
+        {
+            onPressedConfirm = new OnConfirmPressedEvent();
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
-        mainCameraTransform = Camera.main.transform;
         GameData.players.Add(GetComponent<Player>());
         characterController = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         //Move all of this out of here and into a character select screen
         if(controllerNumber == -1)
         {
-            List<int> unavaliableControllers = GameData.GetUnAvaliableControllers();
+            List<int> unavaliableControllers = GameUtils.GetUnAvaliableControllers();
             if (Input.GetButton("START_1") && !unavaliableControllers.Contains(1))
             {
                 controllerNumber = 1;
@@ -67,7 +76,6 @@ public class Player : MonoBehaviour
             //camera forward and right vectors:
             Vector3 forward = Camera.main.transform.forward;
             Vector3 right = Camera.main.transform.right;
-            Debug.Log(forward + ", " + right);
             forward.y = 0f;
             right.y = 0f;
             forward.Normalize();
@@ -91,6 +99,11 @@ public class Player : MonoBehaviour
             // Rotate around our y-axis
             //float heading = Mathf.Atan2(joyVector.x, joyVector.y);
             //transform.rotation = Quaternion.Euler(0f, heading * Mathf.Rad2Deg, 0f);
+            if (Input.GetButtonDown(string.Format("CONFIRM_{0}", controllerNumber)))
+            {
+                onPressedConfirm.Invoke(this);
+            }
         }
+        
     }
 }

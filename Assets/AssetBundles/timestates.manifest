@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 1374956790
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 08c07f2796eb8fb222495695ae19792b
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: bc56e66d52bc4e8437d669aeaa4fd628
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: 11500000, guid: 361d7e56d76d6a34b9cd4c077c1879a6, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/Timestates/test2.asset
+Dependencies: []

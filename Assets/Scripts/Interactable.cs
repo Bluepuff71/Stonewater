@@ -9,29 +9,61 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(Outline))]
+[RequireComponent(typeof(cakeslice.Outline))]
 public abstract class Interactable : MonoBehaviour
 {
     static GameObject currentlySelected;
     static bool isOnObject;
     GameObject contextPanel;
-    GameObject contextPanelPrefab;
-    Button contextButtonPrefab;
-    Button contextButton;
+    static GameObject contextPanelPrefab;
+    public string buttonTrigger = "LeftClick";
+    bool trackMouseClicks;
+    static GameObject contextButtonPrefab;
+    GameObject contextButton;
+    static AssetBundle contextBundle;
+
+    void Awake()
+    {
+        //one line if statement
+        trackMouseClicks = buttonTrigger.ToLower().Contains("click") ? true : false;
+    }
+
     void Start()
     {
-        contextPanelPrefab = Resources.Load<GameObject>(@"Prefabs/Context Menu Panel");
-        contextButtonPrefab = Resources.Load<Button>(@"Prefabs/Context Menu Button");
         GetComponent<cakeslice.Outline>().eraseRenderer = true;
+        if (!contextBundle)
+        {
+            contextBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "AssetBundles/prefabs/ui/contextmenu"));
+            contextButtonPrefab = contextBundle.LoadAsset<GameObject>("Context Menu Button");
+            contextPanelPrefab = contextBundle.LoadAsset<GameObject>("Context Menu Panel");
+        }
     }
 
     void Update()
     {
-        if ((Input.GetButtonDown("LeftClick") && !EventSystem.current.IsPointerOverGameObject() && !isOnObject && currentlySelected) || (currentlySelected && !isOnScreen()))
+        if (trackMouseClicks)
         {
-            currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
-            Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
+            if ((Input.GetButtonDown(buttonTrigger) && !EventSystem.current.IsPointerOverGameObject() && !isOnObject) || (currentlySelected && !isOnScreen()))
+            {
+                DestroyCurrentButtons();
+            }
         }
+        else if (Input.GetButtonDown(buttonTrigger))
+        {
+            if (currentlySelected == gameObject)
+            {
+                DestroyCurrentButtons();
+            }
+            else
+            {
+                CreateButtons();
+            }
+        }
+    }
+
+    void FixedUpdate()
+    {
+        
     }
 
     void OnMouseEnter()
@@ -40,19 +72,9 @@ public abstract class Interactable : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (!EventSystem.current.IsPointerOverGameObject())
+        if (trackMouseClicks && !EventSystem.current.IsPointerOverGameObject() && gameObject != currentlySelected)
         {
-            if (currentlySelected)
-            {
-                currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
-                Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
-            }
-            currentlySelected = gameObject;
-            contextPanel = Instantiate(contextPanelPrefab, GameData.ui.transform) as GameObject;
-            contextPanel.GetComponentInChildren<Text>().text = gameObject.name;
-            GetComponent<cakeslice.Outline>().eraseRenderer = false;
             CreateButtons();
-
         }
     }
 
@@ -67,15 +89,32 @@ public abstract class Interactable : MonoBehaviour
         return screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
     }
 
+    void DestroyCurrentButtons()
+    {
+        if (currentlySelected)
+        {
+            currentlySelected.GetComponent<cakeslice.Outline>().eraseRenderer = true;
+            Destroy(GameObject.FindGameObjectWithTag("ContextMenu"));
+            currentlySelected = null;
+        }
+    }
+
     void CreateButtons()
     {
+        DestroyCurrentButtons();
+        currentlySelected = gameObject;
+        contextPanel = Instantiate(contextPanelPrefab, GameData.ui.transform) as GameObject;
+        contextPanel.transform.SetAsFirstSibling();
+        contextPanel.GetComponentInChildren<Text>().text = gameObject.name;
+        GetComponent<cakeslice.Outline>().eraseRenderer = false;
+
         int i = 0;
-        foreach (Interactable interactible in GetComponents<Interactable>())
+        foreach (Interactable interactable in GetComponentsInChildren<Interactable>())
         {
             //buckle up, here is a crazy lambda function
             Array.ForEach(
                 //First Parameter
-                Array.FindAll(interactible.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public),
+                Array.FindAll(interactable.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public),
                     (member) =>
                     {
                         return member.GetCustomAttribute<ContextMenuAttribute>() != null;
@@ -84,10 +123,13 @@ public abstract class Interactable : MonoBehaviour
                 (memberWithContext) =>
                 {
                     contextButton = Instantiate(contextButtonPrefab, contextPanel.transform);
-                    contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().CommandName;
-                    Debug.Log(contextButton.transform.localPosition);
+                    contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().ButtonLabel;
                     contextButton.transform.localPosition = new Vector3(0, (-30f * i) - 35, 0);
-                    contextButton.onClick.AddListener(() => interactible.Invoke(memberWithContext.Name, 0));
+                    contextButton.GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        DestroyCurrentButtons();
+                        interactable.Invoke(memberWithContext.Name, 0);
+                    });
                     i++;
                 });
         }

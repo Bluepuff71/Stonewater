@@ -1,16 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[System.Serializable]
-public class AudioClipWithVolume
+
+namespace Bluepuff
 {
-
-    public AudioClip audioClip;
-    public float volume;
-
-    public AudioClipWithVolume(AudioClip clip, float volume)
+    [System.Serializable]
+    public class AudioClipWithVolume
     {
-        this.audioClip = clip;
-        this.volume = volume;
+        public AudioClip audioClip;
+        public float volume;
+
+        public AudioClipWithVolume(AudioClip clip, float volume)
+        {
+            this.audioClip = clip;
+            this.volume = volume;
+        }
     }
+
 }

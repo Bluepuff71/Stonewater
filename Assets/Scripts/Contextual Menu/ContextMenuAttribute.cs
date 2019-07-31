@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-namespace Bluepuff
+namespace Bluepuff.Contextual
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class ContextMenuAttribute : Attribute

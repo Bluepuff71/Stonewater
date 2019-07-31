@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class SoundPlaylist : MonoBehaviour
+namespace Bluepuff
 {
-    public Tape tape;
+    [System.Serializable]
+    public class SoundPlaylist : MonoBehaviour
+    {
+        public Tape tape;
+    }
 }

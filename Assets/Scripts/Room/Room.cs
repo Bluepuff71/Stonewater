@@ -35,7 +35,7 @@ public class Room : MonoBehaviour
         {
             if (soundPlaylist.tape.GetTrackAmount() != 0)
             {
-                GameData.mainSoundPlayer.SwitchTape(soundPlaylist.tape, playWhenSwitched: true).Forget();
+                GameData.mainSoundPlayer.SwitchTape(soundPlaylist.tape, playWhenSwitched: false).Forget();
             }
         }
     }

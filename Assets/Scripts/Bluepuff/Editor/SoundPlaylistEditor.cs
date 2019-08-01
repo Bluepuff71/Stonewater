@@ -13,7 +13,6 @@ namespace Bluepuff
     {
         private SoundPlaylist soundPlaylist;
         private bool musicHeaderFoldout = false;
-        private bool fadeFoldout = false;
 
         private void Awake()
         {

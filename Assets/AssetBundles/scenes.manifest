@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 90800475
+CRC: 1822939061
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 72c7f5b103fdf74ac46d5ae1a7ef47ec
+    Hash: 5fba9392fd8c59de706324b4a9336c46
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 94361d37ea04e9fa83a95fc5cccb92e4
+    Hash: 0219669d08331477addc02706980c1c6
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -50,6 +50,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: a78da3f00f3328541b4526c0b0b5ec5c, type: 3}
 - Class: 114
+  Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
   Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
   Script: {fileID: -619905303, guid: f70555f144d8491a825f0804e09c671c, type: 3}
@@ -63,8 +65,6 @@ ClassTypes:
   Script: {fileID: 1077351063, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
   Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: c375ab63bb67f1b4897b2ecad835239a, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 446664a3e8c60574ebb1be0932287711, type: 3}
 - Class: 114
@@ -80,6 +80,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 72eb624c9e74101488245eb78957588f, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: c375ab63bb67f1b4897b2ecad835239a, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 62d0f4ecb70324a4ba0cca3248858b9e, type: 3}
 - Class: 115
   Script: {instanceID: 0}
@@ -91,6 +93,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 157
   Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
 - Class: 222
   Script: {instanceID: 0}
 - Class: 223
@@ -100,9 +104,11 @@ ClassTypes:
 - Class: 258
   Script: {instanceID: 0}
 Assets:
+- Assets/Scenes/MainMenu.unity
 - Assets/Scenes/SampleScene.unity
 - Assets/Scenes/Test.unity
 - Assets/Scenes/Transition.unity
+- Assets/Scenes/AITest.unity
 - Assets/Scenes/MultisceneTest.unity
 Dependencies:
 - C:/Users/emery/Documents/GitHub/DDWorld/Assets/AssetBundles/materials

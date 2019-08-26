@@ -10,7 +10,7 @@ public class TimestateTest : Interactable
         test().Forget();
     }
 
-    [Bluepuff.Contextual.ContextMenu("Switch Scenes")]
+    [Bluepuff.Contextual.ContextButton("Switch Scenes")]
     private async UniTaskVoid test()
     {
         await TimestateManager.SwitchTo(new Timestate("test2", () => { Debug.Log("Test2 Started"); }, () => { Debug.Log("Test2 Finished"); }));

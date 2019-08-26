@@ -82,7 +82,7 @@ namespace Bluepuff
             }
         }
 
-        [Contextual.ContextMenu("Force Teleport")]
+        [Contextual.ContextButton("Force Teleport")]
         private async UniTask Teleport()
         {
             if (connectedTeleporter)
@@ -128,7 +128,7 @@ namespace Bluepuff
             }
         }
 
-        [Contextual.ContextMenu("TEst")]
+        [ContextButton("TEst")]
         public void Test()
         {
             Debug.Log("TEst");

@@ -2,11 +2,11 @@
 namespace Bluepuff.Contextual
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class ContextMenuAttribute : Attribute
+    public class ContextButtonAttribute : Attribute
     {
         private string buttonLabel;
 
-        public ContextMenuAttribute(string buttonLabel)
+        public ContextButtonAttribute(string buttonLabel)
         {
             this.buttonLabel = buttonLabel;
         }

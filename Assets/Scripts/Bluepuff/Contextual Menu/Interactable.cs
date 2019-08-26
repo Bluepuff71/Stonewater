@@ -116,13 +116,13 @@ namespace Bluepuff.Contextual
                     Array.FindAll(interactable.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public),
                         (member) =>
                         {
-                            return member.GetCustomAttribute<ContextMenuAttribute>() != null;
+                            return member.GetCustomAttribute<ContextButtonAttribute>() != null;
                         }),
                     //Second Parameter
                     (memberWithContext) =>
                     {
                         contextButton = Instantiate(contextButtonPrefab, contextPanel.transform);
-                        contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextMenuAttribute>().ButtonLabel;
+                        contextButton.GetComponentInChildren<Text>().text = memberWithContext.GetCustomAttribute<ContextButtonAttribute>().ButtonLabel;
                         contextButton.transform.localPosition = new Vector3(0, (-30f * i) - 35, 0);
                         contextButton.GetComponent<Button>().onClick.AddListener(() =>
                         {

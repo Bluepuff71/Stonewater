@@ -10,7 +10,7 @@ public class TransitionTest : MonoBehaviour
 {
     private void Start()
     {
-        GameData.mainSoundPlayer.SwitchTape(GetComponent<SoundPlaylist>().tape, false).Forget();
+        GameData.mainSoundPlayer.SwitchTape(GetComponent<Tape>(), false).Forget();
         TimestateManager.doTransition = async () => await Transition();
     }
     async UniTask Transition()

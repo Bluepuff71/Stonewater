@@ -6,6 +6,7 @@ using Bluepuff.Utils;
 
 namespace Bluepuff
 {
+    [RequireComponent(typeof(SoundPlayer))]
     public class Teleporter : Interactable
     {
 
@@ -95,7 +96,7 @@ namespace Bluepuff
                 {
                     soundPlayer.QuickPlay(teleportSound);
                 }
-                if (currentRoom.soundPlaylist != connectingRoom.soundPlaylist)
+                if (currentRoom.tape != connectingRoom.tape)
                 {
                     await GameData.mainSoundPlayer.StopAsync(GameData.globalFadeTime);
                 }

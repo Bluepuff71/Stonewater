@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Bluepuff
 {
     [System.Serializable]
-    public class Tape
+    public class Tape : MonoBehaviour
     {
         [SerializeField]
         private List<AudioClipWithVolume> tracks = new List<AudioClipWithVolume>();

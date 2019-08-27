@@ -7,7 +7,7 @@ using Bluepuff.Utils;
 
 namespace Bluepuff
 {
-    [RequireComponent(typeof(SoundPlaylist))]
+    [RequireComponent(typeof(Tape))]
     public class Room : MonoBehaviour
     {
         private Camera roomCamera;
@@ -16,7 +16,7 @@ namespace Bluepuff
         public UnityEvent OnEnterRoom;
 
         [HideInInspector]
-        public SoundPlaylist soundPlaylist;
+        public Tape tape;
 
         // Start is called before the first frame update
         void Start()
@@ -25,9 +25,9 @@ namespace Bluepuff
             {
                 roomCamera = GetComponentInChildren<Camera>();
             }
-            if (!soundPlaylist)
+            if (!tape)
             {
-                soundPlaylist = GetComponent<SoundPlaylist>();
+                tape = GetComponent<Tape>();
             }
             if (Camera.main != roomCamera)
             {
@@ -36,9 +36,9 @@ namespace Bluepuff
             }
             else
             {
-                if (soundPlaylist.tape.GetTrackAmount() != 0)
+                if (tape.GetTrackAmount() != 0)
                 {
-                    GameData.mainSoundPlayer.SwitchTape(soundPlaylist.tape, playWhenSwitched: false).Forget();
+                    GameData.mainSoundPlayer.SwitchTape(tape, playWhenSwitched: false).Forget();
                 }
             }
         }
@@ -50,9 +50,9 @@ namespace Bluepuff
             toRoom.roomCamera.gameObject.SetActive(true);
 
             //MUSIC SWITCHING
-            if (soundPlaylist != toRoom.soundPlaylist)
+            if (tape != toRoom.tape)
             {
-                await GameData.mainSoundPlayer.SwitchTape(toRoom.soundPlaylist.tape, playWhenSwitched: false);
+                await GameData.mainSoundPlayer.SwitchTape(toRoom.tape, playWhenSwitched: false);
             }
             //else
             //{

@@ -5,7 +5,7 @@ namespace Bluepuff.Utils
 {
     public class GameData
     {
-        public static List<Player> players = new List<Player>();
+        public static List<PlayerController> players = new List<PlayerController>();
 
         public static GameObject ui = GameObject.FindGameObjectWithTag("UI");
 

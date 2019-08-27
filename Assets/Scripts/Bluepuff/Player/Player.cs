@@ -5,8 +5,8 @@ using UnityEngine.Events;
 
 namespace Bluepuff
 {
-    public class OnConfirmPressedEvent : UnityEvent<Player> { }
-    public class Player : MonoBehaviour
+    public class OnConfirmPressedEvent : UnityEvent<PlayerController> { }
+    public class PlayerController : MonoBehaviour
     {
         private CharacterController characterController;
 
@@ -17,7 +17,7 @@ namespace Bluepuff
         public float rotationSpeed = 100.0f;
         public float gravity = 80.0F;
 
-        public UnityEvent<Player> onPressedConfirm;
+        public UnityEvent<PlayerController> onPressedConfirm;
 
         private void Awake()
         {
@@ -29,7 +29,7 @@ namespace Bluepuff
         // Start is called before the first frame update
         void Start()
         {
-            GameData.players.Add(GetComponent<Player>());
+            GameData.players.Add(GetComponent<PlayerController>());
             characterController = GetComponent<CharacterController>();
         }
 

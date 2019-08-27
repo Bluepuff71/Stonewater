@@ -8,7 +8,7 @@ namespace Bluepuff.Utils
 {
     public static class GameUtils
     {
-        public static Player GetPlayerByNumber(int playerNum)
+        public static PlayerController GetPlayerByNumber(int playerNum)
         {
             return GameData.players.Find((player) =>
             {
@@ -16,7 +16,7 @@ namespace Bluepuff.Utils
             });
         }
 
-        public static void PerformOnPlayers(System.Action<Player> action)
+        public static void PerformOnPlayers(System.Action<PlayerController> action)
         {
             GameData.players.ForEach(action);
         }
@@ -24,7 +24,7 @@ namespace Bluepuff.Utils
         public static List<int> GetUnAvaliableControllers()
         {
             List<int> unavaliableNumbers = new List<int>();
-            foreach (Player player in GameData.players)
+            foreach (PlayerController player in GameData.players)
             {
                 if (player.controllerNumber != -1)
                 {
@@ -33,7 +33,6 @@ namespace Bluepuff.Utils
             }
             return unavaliableNumbers;
         }
-
 
         public static async UniTask FadeCameraAsync(bool isFadingIn, float duration, bool andSound)
         {

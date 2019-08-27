@@ -40,10 +40,10 @@ namespace Bluepuff
         {
             numOfPlayersAtTelporter++;
             GameObject playerObj;
-            if (other.GetComponent<Player>())
+            if (other.GetComponent<PlayerController>())
             {
                 playerObj = other.gameObject;
-                Player player = playerObj.GetComponent<Player>();
+                PlayerController player = playerObj.GetComponent<PlayerController>();
                 if (!player.readyToTeleport)
                 {
                     if (!teleporterUIText.enabled)
@@ -60,10 +60,10 @@ namespace Bluepuff
         {
             numOfPlayersAtTelporter--;
             GameObject playerObj;
-            if (other.GetComponent<Player>())
+            if (other.GetComponent<PlayerController>())
             {
                 playerObj = other.gameObject;
-                Player player = playerObj.GetComponent<Player>();
+                PlayerController player = playerObj.GetComponent<PlayerController>();
                 player.onPressedConfirm.RemoveListener(async (ply) => await PlayerReady(ply));
             }
             if (numOfPlayersAtTelporter == 0)
@@ -72,7 +72,7 @@ namespace Bluepuff
             }
         }
 
-        private async UniTask PlayerReady(Player player)
+        private async UniTask PlayerReady(PlayerController player)
         {
             player.readyToTeleport = true;
             numOfPlayersReady++;

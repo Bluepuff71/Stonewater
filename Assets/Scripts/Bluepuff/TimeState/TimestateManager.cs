@@ -17,7 +17,7 @@ namespace Bluepuff.Timestate
         {
             AsyncOperation loadTransition = SceneManager.LoadSceneAsync(transitionScene); //Begin loading the transition scene
             loadTransition.allowSceneActivation = false;
-            await GameUtils.FadeCameraAsync(false, 5, true);  //Fade the scene
+            await GameUtils.FadeCameraAsync(false, 1, true);  //Fade the scene
             if (currentTimestate != null) //Invoke the finished event
             {
                 await currentTimestate.onFinished.OnInvokeAsync(new CancellationToken());
@@ -32,14 +32,14 @@ namespace Bluepuff.Timestate
 
             await GameUtils.RefreshGameData(); //refresh the GameData so that it can be referenced properly
             UniTask<List<AsyncOperation>> loadTimestate = LoadAsync(); //start loading the scene
-            await GameUtils.FadeCameraAsync(true, 5, true); //fade in the transition
+            await GameUtils.FadeCameraAsync(true, 1, true); //fade in the transition
             await doTransition(); //invoke transition
             await loadTimestate;
             List<AsyncOperation> asyncOperations = loadTimestate.Result;
-            await GameUtils.FadeCameraAsync(false, 5, true); //fade out the transition scene
+            await GameUtils.FadeCameraAsync(false, 1, true); //fade out the transition scene
             await FinishLoadingAsync(asyncOperations);
             await GameUtils.RefreshGameData(); //refresh the game data so that it reflects the new scene 
-            await GameUtils.FadeCameraAsync(true, 5, true); //fade in the scene
+            await GameUtils.FadeCameraAsync(true, 1, true); //fade in the scene
             timestate.onStarted.Invoke(); //invoke the started event
         }
 
@@ -52,7 +52,15 @@ namespace Bluepuff.Timestate
                 if (i == 0)
                 {
                     await GameUtils.RefreshGameData();
-                    Image fadeImage = GameObject.FindGameObjectWithTag("Fade").GetComponent<Image>();
+                    GameObject fadeImageObj = GameObject.FindGameObjectWithTag("Fade");
+                    if (!fadeImageObj)
+                    {
+                        AssetBundle bundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "AssetBundles/prefabs/ui/fade"));
+                        GameObject fadePrefab = bundle.LoadAsset("Fade Image") as GameObject;
+                        fadeImageObj = GameObject.Instantiate(fadePrefab, GameData.ui.transform);
+                        bundle.Unload(false);
+                    }
+                    Image fadeImage = fadeImageObj.GetComponent<Image>();
                     fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 1);
                 }
             }

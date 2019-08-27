@@ -38,36 +38,36 @@ namespace Bluepuff.Utils
         public static async UniTask FadeCameraAsync(bool isFadingIn, float duration, bool andSound)
         {
             GameObject fadeImageObj = GameObject.FindGameObjectWithTag("Fade");
-            if (fadeImageObj)
+            if (!fadeImageObj)
             {
-                Image fadeImage = fadeImageObj.GetComponent<Image>();
-                if (isFadingIn)
-                {
-                    fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 1);
-                }
-                else
-                {
-                    fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 0);
-                }
-                UniTask crossfade = fadeImage.CrossFadeAlphaAsync(isFadingIn ? 0 : 1, duration);
-                UniTask sound;
-                if (andSound)
-                {
-                    if (isFadingIn)
-                    {
-                        GameData.mainSoundPlayer.PlayAsync(duration).Forget();
-                    }
-                    else
-                    {
-                        sound = GameData.mainSoundPlayer.StopAsync(duration);
-                    }
-                }
-                await UniTask.WhenAll(crossfade, sound);
+                AssetBundle bundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "AssetBundles/prefabs/ui/fade"));
+                GameObject fadePrefab = bundle.LoadAsset("Fade Image") as GameObject;
+                fadeImageObj = GameObject.Instantiate(fadePrefab, GameData.ui.transform);
+                bundle.Unload(false);
+            }
+            Image fadeImage = fadeImageObj.GetComponent<Image>();
+            if (isFadingIn)
+            {
+                fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 1);
             }
             else
             {
-                Debug.LogError("Attempted to start fade but no image was found (Make sure it's tagged)");
+                fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 0);
             }
+            UniTask crossfade = fadeImage.CrossFadeAlphaAsync(isFadingIn ? 0 : 1, duration);
+            UniTask sound;
+            if (andSound)
+            {
+                if (isFadingIn)
+                {
+                    GameData.mainSoundPlayer.PlayAsync(duration).Forget();
+                }
+                else
+                {
+                    sound = GameData.mainSoundPlayer.StopAsync(duration);
+                }
+            }
+            await UniTask.WhenAll(crossfade, sound);
         }
 
         public static async UniTask RefreshGameData()

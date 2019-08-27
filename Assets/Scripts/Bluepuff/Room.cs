@@ -10,6 +10,18 @@ namespace Bluepuff
     [RequireComponent(typeof(Tape))]
     public class Room : MonoBehaviour
     {
+        public static Room Main
+        {
+            get
+            {
+                return Main;
+            }
+            private set
+            {
+                Main = value;
+            }
+        }
+
         private Camera roomCamera;
         //TODO room camera behaivior
 
@@ -36,6 +48,7 @@ namespace Bluepuff
             }
             else
             {
+                Main = gameObject.GetComponent<Room>(); 
                 if (tape.GetTrackAmount() != 0)
                 {
                     GameData.mainSoundPlayer.SwitchTape(tape, playWhenSwitched: false).Forget();

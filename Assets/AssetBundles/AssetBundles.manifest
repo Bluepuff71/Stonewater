@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 3780003960
+CRC: 463953766
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -24,3 +24,6 @@ AssetBundleManifest:
       Name: prefabs/objects
       Dependencies:
         Dependency_0: materials
+    Info_6:
+      Name: prefabs/ui/fade
+      Dependencies: {}

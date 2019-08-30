@@ -59,11 +59,11 @@ namespace Bluepuff.Utils
             {
                 if (isFadingIn)
                 {
-                    GameData.mainSoundPlayer.PlayAsync(duration).Forget();
+                    SoundPlayer.Main.PlayAsync(duration).Forget();
                 }
                 else
                 {
-                    sound = GameData.mainSoundPlayer.StopAsync(duration);
+                    sound = SoundPlayer.Main.StopAsync(duration);
                 }
             }
             await UniTask.WhenAll(crossfade, sound);
@@ -72,7 +72,6 @@ namespace Bluepuff.Utils
         public static async UniTask RefreshGameData()
         {
             GameData.ui = GameObject.FindGameObjectWithTag("UI");
-            GameData.mainSoundPlayer = GameData.ui.GetComponent<SoundPlayer>();
             await UniTask.Yield();
         }
     }

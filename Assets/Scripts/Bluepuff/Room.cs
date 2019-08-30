@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UniRx.Async;
-using Bluepuff.Utils;
 
 namespace Bluepuff
 {
@@ -51,7 +50,7 @@ namespace Bluepuff
                 Main = gameObject.GetComponent<Room>(); 
                 if (tape.GetTrackAmount() != 0)
                 {
-                    GameData.mainSoundPlayer.SwitchTape(tape, playWhenSwitched: false).Forget();
+                    SoundPlayer.Main.SwitchTape(tape, playWhenSwitched: false).Forget();
                 }
             }
         }
@@ -65,7 +64,7 @@ namespace Bluepuff
             //MUSIC SWITCHING
             if (tape != toRoom.tape)
             {
-                await GameData.mainSoundPlayer.SwitchTape(toRoom.tape, playWhenSwitched: false);
+                await SoundPlayer.Main.SwitchTape(toRoom.tape, playWhenSwitched: false);
             }
             //else
             //{

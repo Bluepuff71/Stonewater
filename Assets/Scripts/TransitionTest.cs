@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx.Async;
-using Bluepuff.Utils;
 using Bluepuff.Timestate;
 using Bluepuff;
 
@@ -10,7 +9,7 @@ public class TransitionTest : MonoBehaviour
 {
     private void Start()
     {
-        GameData.mainSoundPlayer.SwitchTape(GetComponent<Tape>(), false).Forget();
+        SoundPlayer.Main.SwitchTape(GetComponent<Tape>(), false).Forget();
         TimestateManager.doTransition = async () => await Transition();
     }
     async UniTask Transition()

@@ -98,7 +98,7 @@ namespace Bluepuff
                 }
                 if (currentRoom.tape != connectingRoom.tape)
                 {
-                    await GameData.mainSoundPlayer.StopAsync(GameData.globalFadeTime);
+                    await SoundPlayer.Main.StopAsync(GameData.globalFadeTime);
                 }
                 await GameUtils.FadeCameraAsync(false, teleportSound.length, true);
                 numOfPlayersReady = 0;

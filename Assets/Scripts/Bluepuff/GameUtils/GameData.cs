@@ -9,6 +9,7 @@ namespace Bluepuff.Utils
 
         public static GameObject ui = GameObject.FindGameObjectWithTag("UI");
 
+        [System.Obsolete("This is deprecated and will be removed in the future use SoundPlayer.Main")]
         public static SoundPlayer mainSoundPlayer = ui.GetComponent<SoundPlayer>();
 
         [System.Obsolete]

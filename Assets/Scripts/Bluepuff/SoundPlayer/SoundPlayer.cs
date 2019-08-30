@@ -13,6 +13,17 @@ namespace Bluepuff
         private bool wasStopped = true;
         private Tape tape;
 
+        /// <summary>
+        /// The soundplayer attached to the UI
+        /// </summary>
+        public static SoundPlayer Main
+        {
+            get
+            {
+                return GameData.ui.GetComponent<SoundPlayer>();
+            }
+        }
+
         void Awake()
         {
             if (!audioSource)

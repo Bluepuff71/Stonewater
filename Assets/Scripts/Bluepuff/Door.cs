@@ -4,28 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Bluepuff
 {
-    public enum DoorBehaviour
-    {
-        SWITCH_CAMERAS,
-        TELEPORT,
-        CUSTOM
-    }
     [ExecuteAlways]
     public class Door : MonoBehaviour
     {
         //Camera switcher editor will handle selecting the cameras
         public GameObject[] cameraObjs = new GameObject[2];
 
-        public DoorBehaviour behaviour;
+        public GameObject[] teleportObjs = new GameObject[2];
+
+        public bool teleportPlayer;
 
         private Dictionary<PlayerController, Vector3> entryPosDict = new Dictionary<PlayerController, Vector3>();
 
         // Start is called before the first frame update
         void Start()
         {
+            gameObject.layer = 9;
             if (Application.isPlaying)
             {
-                gameObject.layer = 9;
                 //This "bakes" all of the cameras
                 Array.ForEach(cameraObjs, (cameraObj) =>
                 {
@@ -45,7 +41,6 @@ namespace Bluepuff
         {
             if (Application.isPlaying)
             {
-                Debug.Log("Endter");
                 PlayerController playerController = other.GetComponentInParent<PlayerController>();
                 if (playerController)
                 {
@@ -69,7 +64,7 @@ namespace Bluepuff
 
                         RaycastHit hit;
                         // Does the ray intersect any objects excluding the player layer
-                        if (Physics.Raycast(entryPos, entryPos - exitPos, out hit, Mathf.Infinity, layerMask))
+                        if (Physics.Raycast(entryPos, exitPos - entryPos, out hit, Mathf.Infinity, layerMask))
                         {
                             if (hit.transform == this.transform)
                             {
@@ -84,8 +79,10 @@ namespace Bluepuff
                         {
                             Debug.Log("Turned Around");
                         }
-                        Debug.DrawLine(entryPos, exitPos, Color.white, 20);
                         entryPosDict.Remove(playerController);
+                    } else
+                    {
+                        Debug.LogErrorFormat("Unable to get entry pos from key with name: {0}", playerController.name);
                     }
                 }
             }

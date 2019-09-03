@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -26,59 +27,103 @@ namespace Bluepuff
             {
                 Handles.DrawLine(door.transform.position, door.cameraObjs[1].transform.position);
             }
+            if (door.teleportObjs[0])
+            {
+                Handles.DrawLine(door.transform.position, door.teleportObjs[0].transform.position);
+            }
+            if (door.teleportObjs[1])
+            {
+                Handles.DrawLine(door.transform.position, door.teleportObjs[1].transform.position);
+            }
         }
         public override void OnInspectorGUI()
         {
-            door.behaviour = (DoorBehaviour)EditorGUILayout.EnumPopup("Door Behaviour", door.behaviour);
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            switch (door.behaviour)
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.LabelField("Cameras to switch between.");
+            EditorGUI.indentLevel++;
+            Camera[] temp = new Camera[2];
+            temp[0] = EditorGUILayout.ObjectField(door.cameraObjs[0] ? door.cameraObjs[0].GetComponent<Camera>() : null, typeof(Camera), true) as Camera;
+            temp[1] = EditorGUILayout.ObjectField(door.cameraObjs[1] ? door.cameraObjs[1].GetComponent<Camera>() : null, typeof(Camera), true) as Camera;
+            try
             {
-                case DoorBehaviour.SWITCH_CAMERAS:
-                    {
-                        EditorGUILayout.BeginHorizontal();
-                        GUILayout.FlexibleSpace();
-                        EditorGUILayout.LabelField("Cameras to switch between.");
-                        GUILayout.FlexibleSpace();
-                        EditorGUILayout.EndHorizontal();
-                        EditorGUI.BeginChangeCheck();
-                        Camera[] temp = new Camera[2];
-                        temp[0] = EditorGUILayout.ObjectField((door.cameraObjs[0]) ? door.cameraObjs[0].GetComponent<Camera>() : null, typeof(Camera), true) as Camera;
-                        temp[1] = EditorGUILayout.ObjectField((door.cameraObjs[1]) ? door.cameraObjs[1].GetComponent<Camera>() : null, typeof(Camera), true) as Camera;
-                        if(temp[0] != null && temp[1] != null && temp[0] == temp[1])
-                        {
-                            Debug.LogError("The selected camera has already been selected. Changes reverted.");
-                        }
-                        else if(temp[0] != temp[1])
-                        {
-                            try
-                            {
-                                door.cameraObjs[0] = temp[0].gameObject;
-                            }
-                            catch (System.NullReferenceException)
-                            {
-                                door.cameraObjs[0] = null;
-                            }
-                            try
-                            {
-                                door.cameraObjs[1] = temp[1].gameObject;
-                            }
-                            catch (System.NullReferenceException)
-                            {
-                                door.cameraObjs[1] = null;
-                            }
-                        }
-                        
-                        if (EditorGUI.EndChangeCheck() && !Application.isPlaying)
-                        {
-                            EditorUtility.SetDirty(door);
-                            EditorSceneManager.MarkSceneDirty(door.gameObject.scene);
-                        }
-                        break;
-                    }
-                default:
-                    break;
+                door.cameraObjs[0] = temp[0].gameObject;
             }
+            catch (NullReferenceException)
+            {
+                door.cameraObjs[0] = null;
+            }
+            try
+            {
+                door.cameraObjs[1] = temp[1].gameObject;
+            }
+            catch (NullReferenceException)
+            {
+                door.cameraObjs[1] = null;
+            }
+            EditorGUI.indentLevel--;
+            door.teleportPlayer = EditorGUILayout.BeginToggleGroup("Teleport Player", door.teleportPlayer);
+            if (!door.teleportPlayer)
+            {
+                DestroyTeleporters();
+            }
+            EditorGUI.indentLevel++;
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
 
+            door.teleportObjs[0] = EditorGUILayout.ObjectField(door.teleportObjs[0], typeof(GameObject), true) as GameObject;
+            door.teleportObjs[1] = EditorGUILayout.ObjectField(door.teleportObjs[1], typeof(GameObject), true) as GameObject;
+
+            if (GUILayout.Button("Auto Place Teleport Points"))
+            {
+                DestroyTeleporters();
+                for (int i = 0; i < 2; i++)
+                {
+                    GameObject teleportObj = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                    teleportObj.name = string.Format("{0} Teleporter", door.name);
+                    teleportObj.transform.position = door.transform.position;
+                    teleportObj.transform.parent = door.transform;
+                    teleportObj.tag = "EditorOnly";
+                    Vector3 extents = teleportObj.GetComponent<Collider>().bounds.extents;
+                    if (Vector3.Distance(teleportObj.transform.position, new Vector3(extents.x, teleportObj.transform.position.y, teleportObj.transform.position.z)) >= Vector3.Distance(teleportObj.transform.position, new Vector3(teleportObj.transform.position.x, teleportObj.transform.position.y, extents.x)))
+                    {
+                        teleportObj.transform.localPosition = door.transform.forward * ((i == 0) ? -2 : 2);
+                    }
+                    else
+                    {
+                        teleportObj.transform.localPosition = door.transform.right * ((i == 0) ? -2 : 2);
+                    }
+
+                    RaycastHit hit;
+                    // Does the ray intersect any objects excluding the player layer
+                    if (Physics.Raycast(new Vector3(0, -extents.y, 0), Vector3.down, out hit, 500))
+                    {
+                        teleportObj.transform.position = new Vector3(hit.transform.position.x, hit.transform.position.y, hit.transform.position.z);
+                    }
+                    door.teleportObjs[i] = teleportObj;
+                }
+            }
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndToggleGroup();
+            EditorGUI.indentLevel--;
+            if (EditorGUI.EndChangeCheck() && !Application.isPlaying)
+            {
+                if((door.cameraObjs[0] != null && door.cameraObjs[1] != null) && door.cameraObjs[0] == door.cameraObjs[1])
+                {
+                    Debug.LogWarningFormat("The selected cameras for door {0} are the same.", door.name);
+                }
+                EditorUtility.SetDirty(door);
+                EditorSceneManager.MarkSceneDirty(door.gameObject.scene);
+            }
+        }
+        private void DestroyTeleporters()
+        {
+            Transform[] childrenTransforms = door.GetComponentsInChildren<Transform>();
+            foreach (Transform child in childrenTransforms)
+            {
+                if (child.name.Contains("Teleporter"))
+                {
+                    DestroyImmediate(child.gameObject);
+                }
+            }
         }
     }
 }

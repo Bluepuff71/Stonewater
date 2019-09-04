@@ -39,6 +39,9 @@ namespace Bluepuff
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
+            EditorGUILayout.BeginHorizontal();
+            //TODO Trigger on exit or on enter buttons
+            //GUILayout.Button("");
             EditorGUILayout.LabelField("Cameras to switch between.");
             EditorGUI.indentLevel++;
             Camera[] temp = new Camera[2];
@@ -91,12 +94,9 @@ namespace Bluepuff
                     {
                         teleportObj.transform.localPosition = door.transform.right * ((i == 0) ? -2 : 2);
                     }
-
-                    RaycastHit hit;
-                    // Does the ray intersect any objects excluding the player layer
-                    if (Physics.Raycast(new Vector3(0, -extents.y, 0), Vector3.down, out hit, 500))
+                    if (Physics.Raycast(teleportObj.transform.position, -teleportObj.transform.up, out RaycastHit hit, 500))
                     {
-                        teleportObj.transform.position = new Vector3(hit.transform.position.x, hit.transform.position.y, hit.transform.position.z);
+                        teleportObj.transform.position = new Vector3(teleportObj.transform.position.x, hit.point.y + extents.y, teleportObj.transform.position.z);
                     }
                     door.teleportObjs[i] = teleportObj;
                 }

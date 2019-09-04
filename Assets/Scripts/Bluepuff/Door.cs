@@ -20,6 +20,18 @@ namespace Bluepuff
         void Start()
         {
             gameObject.layer = 9;
+            gameObject.tag = "EditorOnly";
+            MeshCollider meshCollider = GetComponent<MeshCollider>();
+            if (meshCollider)
+            {
+                meshCollider.convex = true;
+                meshCollider.isTrigger = true;
+                Debug.LogWarning("Mesh Colliders cannot act as triggers. The mesh collider has been converted into a convex collider.");
+            }
+            else
+            {
+                GetComponent<Collider>().isTrigger = true;
+            }
             if (Application.isPlaying)
             {
                 //This "bakes" all of the cameras

@@ -39,10 +39,8 @@ namespace Bluepuff
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.BeginHorizontal();
-            //TODO Trigger on exit or on enter buttons
-            //GUILayout.Button("");
-            EditorGUILayout.LabelField("Cameras to switch between.");
+            door.triggerBehaviour = (TriggerBehaviour)EditorGUILayout.EnumPopup("Trigger", door.triggerBehaviour);
+            EditorGUILayout.LabelField("Cameras to switch between.", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             Camera[] temp = new Camera[2];
             temp[0] = EditorGUILayout.ObjectField(door.cameraObjs[0] ? door.cameraObjs[0].GetComponent<Camera>() : null, typeof(Camera), true) as Camera;

@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Bluepuff
 {
+
+    public enum TriggerBehaviour
+    {
+        OnExit,
+        OnEnter
+    }
     [ExecuteAlways]
     public class Door : MonoBehaviour
     {
@@ -13,6 +19,9 @@ namespace Bluepuff
         public GameObject[] teleportObjs = new GameObject[2];
 
         public bool teleportPlayer;
+
+        [Tooltip("When will the door run it's camera/teleport logic?")]
+        public TriggerBehaviour triggerBehaviour;
 
         private Dictionary<PlayerController, Vector3> entryPosDict = new Dictionary<PlayerController, Vector3>();
 
@@ -53,10 +62,17 @@ namespace Bluepuff
         {
             if (Application.isPlaying)
             {
-                PlayerController playerController = other.GetComponentInParent<PlayerController>();
-                if (playerController)
+                if(triggerBehaviour == TriggerBehaviour.OnExit)
                 {
-                    entryPosDict.Add(playerController, playerController.transform.position);
+                    PlayerController playerController = other.GetComponentInParent<PlayerController>();
+                    if (playerController)
+                    {
+                        entryPosDict.Add(playerController, playerController.transform.position);
+                    }
+                }
+                else
+                {
+                    Debug.Log("Trigger OnEnter - Entered Trigger");
                 }
             }
         }
@@ -65,37 +81,48 @@ namespace Bluepuff
         {
             if (Application.isPlaying)
             {
-                PlayerController playerController = other.GetComponentInParent<PlayerController>();
-                if (playerController)
+                if(triggerBehaviour == TriggerBehaviour.OnExit)
                 {
-                    Vector3 exitPos = playerController.transform.position;
-                    if (entryPosDict.TryGetValue(playerController, out Vector3 entryPos))
+                    PlayerController playerController = other.GetComponentInParent<PlayerController>();
+                    if (playerController)
                     {
-                        // Bit shift the index of the layer (9) to get a bit mask
-                        int layerMask = 1 << 9;
-
-                        RaycastHit hit;
-                        // Does the ray intersect any objects excluding the player layer
-                        if (Physics.Raycast(entryPos, exitPos - entryPos, out hit, Mathf.Infinity, layerMask))
+                        Vector3 exitPos = playerController.transform.position;
+                        if (entryPosDict.TryGetValue(playerController, out Vector3 entryPos))
                         {
-                            if (hit.transform == this.transform)
+                            if (Physics.Raycast(entryPos, exitPos - entryPos, out RaycastHit hit, 500, 1 << 9))
                             {
-                                Debug.Log("Exited Door");
+                                if (hit.transform == this.transform)
+                                {
+                                    
+                                    if (teleportPlayer)
+                                    {
+                                        Debug.Log("Teleporting Player");
+                                    }
+                                    else //Just switch camera
+                                    {
+                                        Debug.Log("Switching Camera");
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogErrorFormat("Door: {0} and Door: {1} are placed too close to eachother.", this.name, hit.transform.name);
+                                }
                             }
                             else
                             {
-                                Debug.LogErrorFormat("Door: {0} and Door: {1} are placed too close to eachother.", this.name, hit.transform.name);
+                                Debug.Log("Turned Around");
                             }
+                            entryPosDict.Remove(playerController);
                         }
                         else
                         {
-                            Debug.Log("Turned Around");
+                            Debug.LogErrorFormat("Unable to get entry pos from key with name: {0}", playerController.name);
                         }
-                        entryPosDict.Remove(playerController);
-                    } else
-                    {
-                        Debug.LogErrorFormat("Unable to get entry pos from key with name: {0}", playerController.name);
                     }
+                }
+                else
+                {
+                    Debug.Log("Trigger OnEnter - Exited Trigger");
                 }
             }
         }

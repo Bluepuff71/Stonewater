@@ -80,9 +80,10 @@ namespace Bluepuff
                 {
                     GameObject teleportObj = GameObject.CreatePrimitive(PrimitiveType.Capsule);
                     teleportObj.name = string.Format("{0} Teleporter", door.name);
+                    teleportObj.tag = "EditorOnly";
                     teleportObj.transform.position = door.transform.position;
                     teleportObj.transform.parent = door.transform;
-                    teleportObj.tag = "EditorOnly";
+                    teleportObj.GetComponent<Collider>().isTrigger = true;
                     Vector3 extents = teleportObj.GetComponent<Collider>().bounds.extents;
                     if (Vector3.Distance(teleportObj.transform.position, new Vector3(extents.x, teleportObj.transform.position.y, teleportObj.transform.position.z)) >= Vector3.Distance(teleportObj.transform.position, new Vector3(teleportObj.transform.position.x, teleportObj.transform.position.y, extents.x)))
                     {
@@ -104,7 +105,7 @@ namespace Bluepuff
             EditorGUI.indentLevel--;
             if (EditorGUI.EndChangeCheck() && !Application.isPlaying)
             {
-                if((door.cameraObjs[0] != null && door.cameraObjs[1] != null) && door.cameraObjs[0] == door.cameraObjs[1])
+                if ((door.cameraObjs[0] != null && door.cameraObjs[1] != null) && door.cameraObjs[0] == door.cameraObjs[1])
                 {
                     Debug.LogWarningFormat("The selected cameras for door {0} are the same.", door.name);
                 }

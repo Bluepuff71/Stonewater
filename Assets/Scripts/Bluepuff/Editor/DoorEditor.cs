@@ -80,10 +80,9 @@ namespace Bluepuff
                 {
                     GameObject teleportObj = GameObject.CreatePrimitive(PrimitiveType.Capsule);
                     teleportObj.name = string.Format("{0} Teleporter", door.name);
-                    teleportObj.tag = "EditorOnly";
                     teleportObj.transform.position = door.transform.position;
                     teleportObj.transform.parent = door.transform;
-                    teleportObj.GetComponent<Collider>().isTrigger = true;
+                    teleportObj.tag = "EditorOnly";
                     Vector3 extents = teleportObj.GetComponent<Collider>().bounds.extents;
                     if (Vector3.Distance(teleportObj.transform.position, new Vector3(extents.x, teleportObj.transform.position.y, teleportObj.transform.position.z)) >= Vector3.Distance(teleportObj.transform.position, new Vector3(teleportObj.transform.position.x, teleportObj.transform.position.y, extents.x)))
                     {

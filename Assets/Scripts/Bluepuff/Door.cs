@@ -62,17 +62,21 @@ namespace Bluepuff
         {
             if (Application.isPlaying)
             {
-                if(triggerBehaviour == TriggerBehaviour.OnExit)
+                PlayerController playerController = other.GetComponentInParent<PlayerController>();
+                if (playerController)
                 {
-                    PlayerController playerController = other.GetComponentInParent<PlayerController>();
-                    if (playerController)
-                    {
-                        entryPosDict.Add(playerController, playerController.transform.position);
-                    }
+                    entryPosDict.Add(playerController, playerController.transform.position);
                 }
-                else
+                if(triggerBehaviour == TriggerBehaviour.OnEnter)
                 {
-                    Debug.Log("Trigger OnEnter - Entered Trigger");
+                    if (teleportPlayer)
+                    {
+                        Debug.Log("OnEnter Behaviour - Teleport Player");
+                    }
+                    else
+                    {
+                        Debug.Log("OnEnter Behaviour - Switch Camera");
+                    }
                 }
             }
         }
@@ -81,48 +85,47 @@ namespace Bluepuff
         {
             if (Application.isPlaying)
             {
-                if(triggerBehaviour == TriggerBehaviour.OnExit)
+                PlayerController playerController = other.GetComponentInParent<PlayerController>();
+                if (playerController)
                 {
-                    PlayerController playerController = other.GetComponentInParent<PlayerController>();
-                    if (playerController)
+                    Vector3 exitPos = playerController.transform.position;
+                    if (entryPosDict.TryGetValue(playerController, out Vector3 entryPos))
                     {
-                        Vector3 exitPos = playerController.transform.position;
-                        if (entryPosDict.TryGetValue(playerController, out Vector3 entryPos))
+                        if (Physics.Raycast(entryPos, exitPos - entryPos, out RaycastHit hit, 500, 1 << 9))
                         {
-                            if (Physics.Raycast(entryPos, exitPos - entryPos, out RaycastHit hit, 500, 1 << 9))
+                            if (hit.transform == this.transform && triggerBehaviour == TriggerBehaviour.OnExit)
                             {
-                                if (hit.transform == this.transform)
+                                if (teleportPlayer)
                                 {
-                                    
-                                    if (teleportPlayer)
-                                    {
-                                        Debug.Log("Teleporting Player");
-                                    }
-                                    else //Just switch camera
-                                    {
-                                        Debug.Log("Switching Camera");
-                                    }
+                                    Debug.Log("OnExit Behaviour - Teleporting Player");
                                 }
-                                else
+                                else //Just switch camera
                                 {
-                                    Debug.LogErrorFormat("Door: {0} and Door: {1} are placed too close to eachother.", this.name, hit.transform.name);
+                                    Debug.Log("OnExit Behaviour - Walked Through");
                                 }
                             }
-                            else
+                            else if (hit.transform != this.transform)
                             {
-                                Debug.Log("Turned Around");
+                                Debug.LogErrorFormat("Door: {0} and Door: {1} are placed too close to eachother.", this.name, hit.transform.name);
                             }
-                            entryPosDict.Remove(playerController);
                         }
                         else
                         {
-                            Debug.LogErrorFormat("Unable to get entry pos from key with name: {0}", playerController.name);
+                            if(triggerBehaviour == TriggerBehaviour.OnEnter && !teleportPlayer)
+                            {
+                                Debug.Log("OnEnter Behaviour - Turned Around");
+                            }
+                            else if(triggerBehaviour == TriggerBehaviour.OnExit)
+                            {
+                                Debug.Log("OnExit Behaviour - Turned Around");
+                            }
                         }
+                        entryPosDict.Remove(playerController);
                     }
-                }
-                else
-                {
-                    Debug.Log("Trigger OnEnter - Exited Trigger");
+                    else
+                    {
+                        Debug.LogErrorFormat("Unable to get entry pos from key with name: {0}", playerController.name);
+                    }
                 }
             }
         }

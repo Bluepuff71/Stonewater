@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Bluepuff.Timestate
+namespace Bluepuff.TS
 {
     [System.Serializable]
     [CreateAssetMenu(fileName = "Timestate", menuName = "Bluepuff/Create Timestate")]

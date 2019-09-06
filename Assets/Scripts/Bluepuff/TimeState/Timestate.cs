@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace Bluepuff.Timestate
+namespace Bluepuff.TS
 {
-    public class Timestate
+    public class Timestate : Object
     {
         public readonly TimestateScriptableObject timestateScriptableObject;
         public readonly UnityEvent onStarted = new UnityEvent();

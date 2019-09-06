@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Bluepuff.Timestate
+namespace Bluepuff.TS
 {
     public static class TimestateManager
     {

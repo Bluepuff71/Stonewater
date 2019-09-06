@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx.Async;
-using Bluepuff.Timestate;
+using Bluepuff.TS;
 using Bluepuff;
 
 public class TransitionTest : MonoBehaviour

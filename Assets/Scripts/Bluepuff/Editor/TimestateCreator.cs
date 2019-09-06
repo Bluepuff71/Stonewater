@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace Bluepuff.Timestate
+namespace Bluepuff.TS
 {
     public class TimestateCreator : EditorWindow
     {

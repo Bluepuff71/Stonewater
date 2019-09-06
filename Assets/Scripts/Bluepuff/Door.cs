@@ -5,10 +5,16 @@ using UnityEngine;
 namespace Bluepuff
 {
 
-    public enum TriggerBehaviour
+    public enum Door_TriggerBehaviour
     {
         OnExit,
         OnEnter
+    }
+
+    public enum Door_Behaviour
+    {
+        SWITCH_CAMERAS,
+        LOAD_TIMESTATE
     }
     [ExecuteAlways]
     public class Door : MonoBehaviour
@@ -21,7 +27,9 @@ namespace Bluepuff
         public bool teleportPlayer;
 
         [Tooltip("When will the door run it's camera/teleport logic?")]
-        public TriggerBehaviour triggerBehaviour;
+        public Door_TriggerBehaviour triggerBehaviour;
+
+        public Door_Behaviour behaviour;
 
         private Dictionary<PlayerController, Vector3> entryPosDict = new Dictionary<PlayerController, Vector3>();
 
@@ -43,15 +51,16 @@ namespace Bluepuff
             }
             if (Application.isPlaying)
             {
+                
                 //This "bakes" all of the cameras
                 Array.ForEach(cameraObjs, (cameraObj) =>
                 {
+                    GameObject bakedCamera = new GameObject("-- Baked Camera --");
+                    bakedCamera.transform.position = cameraObj.transform.position;
+                    bakedCamera.transform.rotation = cameraObj.transform.rotation;
+                    bakedCamera.transform.localScale = cameraObj.transform.localScale;
                     if (!cameraObj.tag.Equals("MainCamera"))
-                    {
-                        GameObject bakedCamera = Instantiate(new GameObject("--Baked Camera--"), cameraObj.transform);
-                        bakedCamera.transform.position = cameraObj.transform.position;
-                        bakedCamera.transform.rotation = cameraObj.transform.rotation;
-                        bakedCamera.transform.localScale = cameraObj.transform.localScale;
+                    { 
                         Destroy(cameraObj);
                     }
                 });
@@ -67,7 +76,7 @@ namespace Bluepuff
                 {
                     entryPosDict.Add(playerController, playerController.transform.position);
                 }
-                if (triggerBehaviour == TriggerBehaviour.OnEnter)
+                if (triggerBehaviour == Door_TriggerBehaviour.OnEnter)
                 {
                     if (teleportPlayer)
                     {
@@ -93,7 +102,7 @@ namespace Bluepuff
                     {
                         if (Physics.Raycast(entryPos, exitPos - entryPos, out RaycastHit hit, 500, 1 << 9))
                         {
-                            if (hit.transform == this.transform && triggerBehaviour == TriggerBehaviour.OnExit)
+                            if (hit.transform == this.transform && triggerBehaviour == Door_TriggerBehaviour.OnExit)
                             {
                                 if (teleportPlayer)
                                 {
@@ -111,11 +120,11 @@ namespace Bluepuff
                         }
                         else
                         {
-                            if (triggerBehaviour == TriggerBehaviour.OnEnter && !teleportPlayer)
+                            if (triggerBehaviour == Door_TriggerBehaviour.OnEnter && !teleportPlayer)
                             {
                                 Debug.Log("OnEnter Behaviour - Turned Around");
                             }
-                            else if (triggerBehaviour == TriggerBehaviour.OnExit)
+                            else if (triggerBehaviour == Door_TriggerBehaviour.OnExit)
                             {
                                 Debug.Log("OnExit Behaviour - Turned Around");
                             }

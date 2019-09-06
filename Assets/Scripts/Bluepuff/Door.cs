@@ -16,11 +16,15 @@ namespace Bluepuff
         SWITCH_CAMERAS,
         LOAD_TIMESTATE
     }
+
     [ExecuteAlways]
     public class Door : MonoBehaviour
     {
         //Camera switcher editor will handle selecting the cameras
         public GameObject[] cameraObjs = new GameObject[2];
+
+        //which index of cameraObjs the main camera is located
+        private byte mainCameraIndex;
 
         public GameObject[] teleportObjs = new GameObject[2];
 
@@ -32,6 +36,8 @@ namespace Bluepuff
         public Door_Behaviour behaviour;
 
         private Dictionary<PlayerController, Vector3> entryPosDict = new Dictionary<PlayerController, Vector3>();
+
+        private static Dictionary<GameObject, GameObject> cameraBakedDict = new Dictionary<GameObject, GameObject>();
 
         // Start is called before the first frame update
         void Start()
@@ -51,20 +57,41 @@ namespace Bluepuff
             }
             if (Application.isPlaying)
             {
-                
                 //This "bakes" all of the cameras
-                Array.ForEach(cameraObjs, (cameraObj) =>
+                for (byte i = 0; i < cameraObjs.Length; i++)
                 {
-                    GameObject bakedCamera = new GameObject("-- Baked Camera --");
-                    bakedCamera.transform.position = cameraObj.transform.position;
-                    bakedCamera.transform.rotation = cameraObj.transform.rotation;
-                    bakedCamera.transform.localScale = cameraObj.transform.localScale;
-                    if (!cameraObj.tag.Equals("MainCamera"))
-                    { 
-                        Destroy(cameraObj);
+                    //try to get the baked camera
+                    if (cameraBakedDict.TryGetValue(cameraObjs[i], out GameObject bakedCamera))
+                    {
+                        //if we are able to get it then that means the camera has already been baked so we should
+                        //just set the cameraObj = the baked camera
+                        cameraObjs[i] = bakedCamera;
                     }
-                });
+                    else
+                    {
+                        //if the camera isn't found then it needs to be baked
+                        bakedCamera = new GameObject(string.Format("Baked: {0}", cameraObjs[i].name));
+                        bakedCamera.transform.position = cameraObjs[i].transform.position;
+                        bakedCamera.transform.rotation = cameraObjs[i].transform.rotation;
+                        bakedCamera.transform.localScale = cameraObjs[i].transform.localScale;
+                        cameraBakedDict.Add(cameraObjs[i], bakedCamera);
+                        if (!cameraObjs[i].tag.Equals("MainCamera"))
+                        {
+                            Destroy(cameraObjs[i]);
+                        }
+                        else
+                        {
+                            mainCameraIndex = i;
+                        }
+                        cameraObjs[i] = bakedCamera;
+                    }
+                }
             }
+        }
+
+        private void OnDestroy()
+        {
+            cameraBakedDict.Clear(); //We do this so that there won't be a problem when switching timestates
         }
 
         private void OnTriggerEnter(Collider other)
@@ -110,7 +137,8 @@ namespace Bluepuff
                                 }
                                 else //Just switch camera
                                 {
-                                    Debug.Log("OnExit Behaviour - Walked Through");
+                                    Debug.Log("OnExit Behaviour - Switch Camera");
+
                                 }
                             }
                             else if (hit.transform != this.transform)
@@ -137,6 +165,14 @@ namespace Bluepuff
                     }
                 }
             }
+        }
+
+        private void SwitchCamera()
+        {
+            mainCameraIndex = 1;
+            Camera.main.transform.position = cameraObjs[mainCameraIndex == 0 ? 1 : 0].transform.position;
+            Camera.main.transform.rotation = cameraObjs[mainCameraIndex == 0 ? 1 : 0].transform.rotation;
+            Camera.main.transform.localScale = cameraObjs[mainCameraIndex == 0 ? 1 : 0].transform.localScale;
         }
     }
 }

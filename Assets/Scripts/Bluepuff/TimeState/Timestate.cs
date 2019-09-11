@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Bluepuff.TS
 {
-    public class Timestate : Object
+    public class Timestate
     {
         public readonly TimestateScriptableObject timestateScriptableObject;
         public readonly UnityEvent onStarted = new UnityEvent();

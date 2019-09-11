@@ -60,11 +60,6 @@ namespace Bluepuff.Contextual
             }
         }
 
-        void FixedUpdate()
-        {
-
-        }
-
         void OnMouseEnter()
         {
             isOnObject = true;

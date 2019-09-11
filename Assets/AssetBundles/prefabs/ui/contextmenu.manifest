@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 2934229430
+CRC: 1589354990
 Hashes:
   AssetFileHash:
     serializedVersion: 2
@@ -34,6 +34,6 @@ ClassTypes:
 - Class: 224
   Script: {instanceID: 0}
 Assets:
-- Assets/Prefabs/Context Menu Panel.prefab
-- Assets/Prefabs/Context Menu Button.prefab
+- Assets/Scripts/Bluepuff/Contextual Menu/Prefabs/Context Menu Panel.prefab
+- Assets/Scripts/Bluepuff/Contextual Menu/Prefabs/Context Menu Button.prefab
 Dependencies: []

@@ -19,6 +19,10 @@ namespace Bluepuff
 
         public UnityEvent<PlayerController> onPressedConfirm;
 
+        private Vector3 forward, right;
+
+        private float previous_up_down = 0, previous_left_right = 0;
+
         private void Awake()
         {
             if (onPressedConfirm == null)
@@ -31,6 +35,7 @@ namespace Bluepuff
         {
             GameData.players.Add(GetComponent<PlayerController>());
             characterController = GetComponent<CharacterController>();
+            UpdateRelativeController();
         }
 
         // Update is called once per frame
@@ -67,27 +72,21 @@ namespace Bluepuff
             }
             else
             {
-
                 // Get the horizontal and vertical axis.
                 // By default they are mapped to the arrow keys.
                 // The value is in the range -1 to 1
                 float up_down_translation = Input.GetAxis(string.Format("UP_DOWN_{0}", controllerNumber));
                 float left_right_translation = Input.GetAxis(string.Format("LEFT_RIGHT_{0}", controllerNumber));
 
-                //Vector3 relativeMovement = Camera.main.transform.TransformVector(left_right_translation, 0, up_down_translation);
-                //camera forward and right vectors:
-                Vector3 forward = Camera.main.transform.forward;
-                Vector3 right = Camera.main.transform.right;
-                forward.y = 0f;
-                right.y = 0f;
-                forward.Normalize();
-                right.Normalize();
-                if (forward == Vector3.zero)
+                float angle = Mathf.DeltaAngle(Mathf.Atan2(up_down_translation, left_right_translation) * Mathf.Rad2Deg, Mathf.Atan2(previous_up_down, previous_left_right) * Mathf.Rad2Deg);
+                Debug.Log(angle);
+                if (Mathf.Abs(angle) > 90 || Mathf.Approximately(previous_left_right, 0) && Mathf.Approximately(previous_up_down, 0))
                 {
-                    forward = Camera.main.transform.up;
-                    forward.y = 0;
+                    UpdateRelativeController();
+                    previous_left_right = left_right_translation;
+                    previous_up_down = up_down_translation;
                 }
-
+                //camera forward and right vectors:
 
                 //this is the direction in the world space we want to move:
                 Vector3 relativeMovement = forward * up_down_translation + right * left_right_translation;
@@ -105,8 +104,23 @@ namespace Bluepuff
                 {
                     onPressedConfirm.Invoke(this);
                 }
+                
             }
 
+        }
+        private void UpdateRelativeController()
+        {
+            forward = Camera.main.transform.forward;
+            right = Camera.main.transform.right;
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+            if (forward == Vector3.zero)
+            {
+                forward = Camera.main.transform.up;
+                forward.y = 0;
+            }
         }
     }
 }

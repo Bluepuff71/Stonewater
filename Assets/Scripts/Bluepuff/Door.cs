@@ -2,21 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
 namespace Bluepuff
 {
-
-    public enum Door_TriggerBehaviour
-    {
-        OnExit,
-        OnEnter
-    }
-
-    public enum Door_Behaviour
-    {
-        SWITCH_CAMERAS,
-        LOAD_TIMESTATE
-    }
-
     [ExecuteAlways]
     public class Door : MonoBehaviour
     {
@@ -24,26 +13,54 @@ namespace Bluepuff
         public GameObject[] cameraObjs = new GameObject[2];
 
         //which index of cameraObjs the main camera is located
-        private byte mainCameraIndex;
+        private static GameObject mainCameraLocation;
 
         public GameObject[] teleportObjs = new GameObject[2];
 
-        public bool teleportPlayer;
+        public bool TeleportPlayer { get; set; }
+
+        public Tape[] tapes = new Tape[2];
+
+        public enum TriggerBehaviour
+        {
+            OnExit,
+            OnEnter
+        }
+
+        public enum Behaviour
+        {
+            SWITCH_CAMERAS,
+            LOAD_TIMESTATE
+        }
 
         [Tooltip("When will the door run it's camera/teleport logic?")]
-        public Door_TriggerBehaviour triggerBehaviour;
+        public TriggerBehaviour triggerBehaviour;
 
-        public Door_Behaviour behaviour;
+        public Behaviour behaviour;
 
         private Dictionary<PlayerController, Vector3> entryPosDict = new Dictionary<PlayerController, Vector3>();
 
         private static Dictionary<GameObject, GameObject> cameraBakedDict = new Dictionary<GameObject, GameObject>();
 
+        public event EventHandler OnTriggered; //People can subscribe to this event but only this class can invoke it.
+
+        public event EventHandler OnTurnedAround;
+
+        private void Awake()
+        {
+            if (Application.isPlaying)
+            {
+                //If we are switching cameras, we need to subscribe to the OnTriggered event
+                if (behaviour == Behaviour.SWITCH_CAMERAS)
+                {
+                    OnTriggered += SwitchCamera;
+                }
+            }
+        }
         // Start is called before the first frame update
         void Start()
         {
             gameObject.layer = 9;
-            gameObject.tag = "EditorOnly";
             MeshCollider meshCollider = GetComponent<MeshCollider>();
             if (meshCollider)
             {
@@ -57,6 +74,7 @@ namespace Bluepuff
             }
             if (Application.isPlaying)
             {
+                GetComponent<MeshRenderer>().enabled = false;
                 //This "bakes" all of the cameras
                 for (byte i = 0; i < cameraObjs.Length; i++)
                 {
@@ -81,7 +99,7 @@ namespace Bluepuff
                         }
                         else
                         {
-                            mainCameraIndex = i;
+                            mainCameraLocation = bakedCamera;
                         }
                         cameraObjs[i] = bakedCamera;
                     }
@@ -96,6 +114,7 @@ namespace Bluepuff
 
         private void OnTriggerEnter(Collider other)
         {
+            //Only if we are playing
             if (Application.isPlaying)
             {
                 PlayerController playerController = other.GetComponentInParent<PlayerController>();
@@ -103,15 +122,11 @@ namespace Bluepuff
                 {
                     entryPosDict.Add(playerController, playerController.transform.position);
                 }
-                if (triggerBehaviour == Door_TriggerBehaviour.OnEnter)
+                if (triggerBehaviour == TriggerBehaviour.OnEnter)
                 {
-                    if (teleportPlayer)
+                    if(OnTriggered != null)
                     {
-                        Debug.Log("OnEnter Behaviour - Teleport Player");
-                    }
-                    else
-                    {
-                        Debug.Log("OnEnter Behaviour - Switch Camera");
+                        OnTriggered.Invoke(this, EventArgs.Empty);
                     }
                 }
             }
@@ -119,6 +134,7 @@ namespace Bluepuff
 
         private void OnTriggerExit(Collider other)
         {
+            //Only if we are playing
             if (Application.isPlaying)
             {
                 PlayerController playerController = other.GetComponentInParent<PlayerController>();
@@ -129,16 +145,11 @@ namespace Bluepuff
                     {
                         if (Physics.Raycast(entryPos, exitPos - entryPos, out RaycastHit hit, 500, 1 << 9))
                         {
-                            if (hit.transform == this.transform && triggerBehaviour == Door_TriggerBehaviour.OnExit)
+                            if (hit.transform == this.transform && triggerBehaviour == TriggerBehaviour.OnExit)
                             {
-                                if (teleportPlayer)
+                                if(OnTriggered != null)
                                 {
-                                    Debug.Log("OnExit Behaviour - Teleporting Player");
-                                }
-                                else //Just switch camera
-                                {
-                                    Debug.Log("OnExit Behaviour - Switch Camera");
-
+                                    OnTriggered.Invoke(this, EventArgs.Empty);
                                 }
                             }
                             else if (hit.transform != this.transform)
@@ -148,13 +159,9 @@ namespace Bluepuff
                         }
                         else
                         {
-                            if (triggerBehaviour == Door_TriggerBehaviour.OnEnter && !teleportPlayer)
+                            if(OnTurnedAround != null)
                             {
-                                Debug.Log("OnEnter Behaviour - Turned Around");
-                            }
-                            else if (triggerBehaviour == Door_TriggerBehaviour.OnExit)
-                            {
-                                Debug.Log("OnExit Behaviour - Turned Around");
+                                OnTurnedAround.Invoke(this, EventArgs.Empty);
                             }
                         }
                         entryPosDict.Remove(playerController);
@@ -167,12 +174,19 @@ namespace Bluepuff
             }
         }
 
-        private void SwitchCamera()
+        //Switch camera behaviour
+        //TODO Implement teleport behaviour
+        private void SwitchCamera(object sender, EventArgs e)
         {
-            mainCameraIndex = 1;
-            Camera.main.transform.position = cameraObjs[mainCameraIndex == 0 ? 1 : 0].transform.position;
-            Camera.main.transform.rotation = cameraObjs[mainCameraIndex == 0 ? 1 : 0].transform.rotation;
-            Camera.main.transform.localScale = cameraObjs[mainCameraIndex == 0 ? 1 : 0].transform.localScale;
+            byte cameraNum = 0;
+            if(cameraObjs[0] == mainCameraLocation)
+            {
+                cameraNum = 1;
+            }
+            Camera.main.transform.position = cameraObjs[cameraNum].transform.position;
+            Camera.main.transform.rotation = cameraObjs[cameraNum].transform.rotation;
+            Camera.main.transform.localScale = cameraObjs[cameraNum].transform.localScale;
+            mainCameraLocation = cameraObjs[cameraNum];
         }
     }
 }

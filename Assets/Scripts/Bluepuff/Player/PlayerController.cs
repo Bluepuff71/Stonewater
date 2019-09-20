@@ -6,6 +6,7 @@ using UnityEngine.Events;
 namespace Bluepuff
 {
     public class OnConfirmPressedEvent : UnityEvent<PlayerController> { }
+    //This should probably just be renamed Player and a custom editor should be built to separate the different parts
     public class PlayerController : MonoBehaviour
     {
         private CharacterController characterController;

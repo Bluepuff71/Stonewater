@@ -8,6 +8,11 @@ namespace Bluepuff
     public class OnConfirmPressedEvent : UnityEvent<PlayerController> { }
     public class PlayerController : MonoBehaviour
     {
+        /// <summary>
+        /// List of all players
+        /// </summary>
+        public static List<PlayerController> players = new List<PlayerController>();
+
         private CharacterController characterController;
 
         public int controllerNumber = -1;
@@ -29,7 +34,7 @@ namespace Bluepuff
         // Start is called before the first frame update
         void Start()
         {
-            GameData.players.Add(GetComponent<PlayerController>());
+            players.Add(GetComponent<PlayerController>());
             characterController = GetComponent<CharacterController>();
         }
 
@@ -107,6 +112,19 @@ namespace Bluepuff
                 }
             }
 
+        }
+
+        public static PlayerController GetPlayerByNumber(int playerNum)
+        {
+            return players.Find((player) =>
+            {
+                return player.controllerNumber == playerNum;
+            });
+        }
+
+        public static void PerformOnPlayers(System.Action<PlayerController> action)
+        {
+            players.ForEach(action);
         }
     }
 }

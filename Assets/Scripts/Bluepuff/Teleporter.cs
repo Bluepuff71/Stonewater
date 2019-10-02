@@ -48,7 +48,7 @@ namespace Bluepuff
                 {
                     if (!teleporterUIText.enabled)
                     {
-                        teleporterUIText.text = string.Format("To {0}. Press A to ready up ({1}/{2})", connectingRoom.name, numOfPlayersReady, GameData.players.Count);
+                        teleporterUIText.text = string.Format("To {0}. Press A to ready up ({1}/{2})", connectingRoom.name, numOfPlayersReady, PlayerController.players.Count);
                         teleporterUIText.enabled = true;
                     }
                     player.onPressedConfirm.AddListener(async (ply) => await PlayerReady(ply));
@@ -76,7 +76,7 @@ namespace Bluepuff
         {
             player.readyToTeleport = true;
             numOfPlayersReady++;
-            if (numOfPlayersReady == GameData.players.Count)
+            if (numOfPlayersReady == PlayerController.players.Count)
             {
                 player.onPressedConfirm.RemoveAllListeners();
                 await Teleport();
@@ -88,7 +88,7 @@ namespace Bluepuff
         {
             if (connectedTeleporter)
             {
-                GameUtils.PerformOnPlayers((player) =>
+                PlayerController.PerformOnPlayers((player) =>
                 {
                     player.enabled = false;
                 });
@@ -103,7 +103,7 @@ namespace Bluepuff
                 await GameUtils.FadeCameraAsync(false, teleportSound.length, true);
                 numOfPlayersReady = 0;
                 await currentRoom.ChangeRoom(connectingRoom); //call the other room's changeroom function
-                GameData.players.ForEach((player) =>
+                PlayerController.players.ForEach((player) =>
                 {
                     player.readyToTeleport = false;
                     player.transform.position = connectedTeleporter.transform.position;
@@ -118,7 +118,7 @@ namespace Bluepuff
                 //}
                 //FADE IN
                 await GameUtils.FadeCameraAsync(true, arriveSound.length, true);
-                GameUtils.PerformOnPlayers((player) =>
+                PlayerController.PerformOnPlayers((player) =>
                 {
                     player.enabled = true;
                 });

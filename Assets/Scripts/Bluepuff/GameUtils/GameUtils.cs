@@ -8,23 +8,12 @@ namespace Bluepuff.Utils
 {
     public static class GameUtils
     {
-        public static PlayerController GetPlayerByNumber(int playerNum)
-        {
-            return GameData.players.Find((player) =>
-            {
-                return player.controllerNumber == playerNum;
-            });
-        }
-
-        public static void PerformOnPlayers(System.Action<PlayerController> action)
-        {
-            GameData.players.ForEach(action);
-        }
+        
 
         public static List<int> GetUnAvaliableControllers()
         {
             List<int> unavaliableNumbers = new List<int>();
-            foreach (PlayerController player in GameData.players)
+            foreach (PlayerController player in PlayerController.players)
             {
                 if (player.controllerNumber != -1)
                 {

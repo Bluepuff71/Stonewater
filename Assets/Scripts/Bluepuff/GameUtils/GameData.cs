@@ -5,10 +5,6 @@ namespace Bluepuff.Utils
 {
     public class GameData
     {
-
-        //This can be moved into a player class
-        public static List<PlayerController> players = new List<PlayerController>();
-
         public static GameObject ui = GameObject.FindGameObjectWithTag("UI");
 
         [System.Obsolete("This is deprecated and will be removed in the future use SoundPlayer.Main")]

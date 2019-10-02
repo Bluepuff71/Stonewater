@@ -12,6 +12,7 @@ namespace Bluepuff
     public class TapeEditor : Editor
     {
         private Tape tape;
+        private bool musicFoldout;
         private void Awake()
         {
             tape = (Tape)target;
@@ -19,38 +20,46 @@ namespace Bluepuff
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
-            for (int i = 0; i < tape.GetTrackAmount(); i++)
+            //this should be bold
+            musicFoldout = EditorGUILayout.Foldout(musicFoldout, "Sounds");
+            if (musicFoldout)
             {
-                AudioClipWithVolume track = tape.GetTrackAt(i);
-                track.audioClip = EditorGUILayout.ObjectField(string.Format("Track {0}", i), track.audioClip, typeof(AudioClip), allowSceneObjects: false) as AudioClip;
-                track.volume = EditorGUILayout.Slider("Volume", track.volume, 0, 1);
-                if (!track.Equals(tape.GetTrackAt(i)))
+                EditorGUI.indentLevel++;
+                for (int i = 0; i < tape.GetTrackAmount(); i++)
                 {
-                    tape.SetTrackAt(i, new AudioClipWithVolume(track.audioClip, track.volume));
+                    AudioClipWithVolume track = tape.GetTrackAt(i);
+                    track.audioClip = EditorGUILayout.ObjectField(string.Format("Track {0}", i), track.audioClip, typeof(AudioClip), allowSceneObjects: false) as AudioClip;
+                    track.volume = EditorGUILayout.Slider("Volume", track.volume, 0, 1);
+                    if (!track.Equals(tape.GetTrackAt(i)))
+                    {
+                        tape.SetTrackAt(i, new AudioClipWithVolume(track.audioClip, track.volume));
+                    }
                 }
-            }
-            EditorGUILayout.BeginHorizontal();
-            if (tape.GetTrackAmount() == 0 || tape.GetTrackAt(tape.GetTrackAmount() - 1).audioClip != null)
-            {
-                if (GUILayout.Button("Add Track"))
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(EditorGUI.indentLevel * 15);
+                if (tape.GetTrackAmount() == 0 || tape.GetTrackAt(tape.GetTrackAmount() - 1).audioClip != null)
                 {
-                    tape.AddTrack(new AudioClipWithVolume(null, 1));
+                    if (GUILayout.Button("Add Track"))
+                    {
+                        tape.AddTrack(new AudioClipWithVolume(null, 1));
+                    }
                 }
-            }
-            if (tape.GetTrackAmount() > 0)
-            {
-                if (GUILayout.Button("Remove Track"))
+                if (tape.GetTrackAmount() > 0)
                 {
-                    tape.RemoveLastTrack();
+                    if (GUILayout.Button("Remove Track"))
+                    {
+                        tape.RemoveLastTrack();
+                    }
                 }
+                EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
             }
-            EditorGUILayout.EndHorizontal();
-            EditorGUI.indentLevel = 1;
+            EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            EditorGUI.BeginDisabledGroup(tape.GetTrackAmount() == 0);
             tape.PersistTracks = EditorGUILayout.ToggleLeft("Pause instead of stopping?", tape.PersistTracks);
-            if (tape.GetTrackAmount() > 1)
-            {
-                tape.ShouldLoop = EditorGUILayout.ToggleLeft("Loop Playlist", tape.ShouldLoop);
-            }
+            tape.ShouldLoop = EditorGUILayout.ToggleLeft(tape.GetTrackAmount() > 1 ? "Loop Playlist" : "Loop Track", tape.ShouldLoop);
+            EditorGUI.EndDisabledGroup();
             if (EditorGUI.EndChangeCheck() && !Application.isPlaying)
             {
                 EditorUtility.SetDirty(tape);

@@ -14,6 +14,8 @@ namespace Bluepuff
     public class DoorEditor : Editor
     {
         private Door door;
+        private bool camera1Foldout;
+        private bool camera2Foldout;
         private void Awake()
         {
             door = (Door)target;
@@ -55,26 +57,34 @@ namespace Bluepuff
                         {
                             EditorGUILayout.LabelField("Cameras to switch between.", EditorStyles.boldLabel);
                             EditorGUI.indentLevel++;
-                            Camera[] temp = new Camera[2];
-                            temp[0] = EditorGUILayout.ObjectField(door.cameraObjs[0] ? door.cameraObjs[0].GetComponent<Camera>() : null, typeof(Camera), true) as Camera;
-                            temp[1] = EditorGUILayout.ObjectField(door.cameraObjs[1] ? door.cameraObjs[1].GetComponent<Camera>() : null, typeof(Camera), true) as Camera;
-                            try
+                            camera1Foldout = EditorGUILayout.Foldout(camera1Foldout, "Camera 1");
+                            if (camera1Foldout)
                             {
-                                door.cameraObjs[0] = temp[0].gameObject;
+                                door.cameraObjs[0] = (EditorGUILayout.ObjectField(door.cameraObjs[0]?.GetComponent<Camera>(), typeof(Camera), true) as Camera)?.gameObject;
+                                EditorGUI.indentLevel++;
+                                door.tapes[0] = EditorGUILayout.ObjectField("Tape to play", door.tapes[0], typeof(Tape), true) as Tape;
+                                EditorGUI.indentLevel--;
                             }
-                            catch (NullReferenceException)
+                            camera2Foldout = EditorGUILayout.Foldout(camera2Foldout, "Camera 2");
+                            if (camera2Foldout)
                             {
-                                door.cameraObjs[0] = null;
-                            }
-                            try
+                                door.cameraObjs[1] = (EditorGUILayout.ObjectField(door.cameraObjs[1]?.GetComponent<Camera>(), typeof(Camera), true) as Camera)?.gameObject;
+                                EditorGUI.indentLevel++;
+                                door.tapes[1] = EditorGUILayout.ObjectField("Tape to play", door.tapes[1], typeof(Tape), true) as Tape;
+                                EditorGUI.indentLevel--;
+                            }                        
+                            Tape camera1Tape = door.cameraObjs[0]?.GetComponent<Tape>(), camera2Tape = door.cameraObjs[1]?.GetComponent<Tape>(); //Notice the ? after door.cameraObj[0] this is null propagation
+                            EditorGUI.BeginDisabledGroup(!(camera1Tape && camera2Tape));
+                            EditorGUILayout.BeginHorizontal();
+                            GUILayout.Space(EditorGUI.indentLevel * 15);
+                            bool autoPickTapesButtonPressed = GUILayout.Button("Autopick Tapes");
+                            EditorGUILayout.EndHorizontal();
+                            if (autoPickTapesButtonPressed)
                             {
-                                door.cameraObjs[1] = temp[1].gameObject;
+                                door.tapes[0] = camera1Tape;
+                                door.tapes[1] = camera2Tape;
                             }
-                            catch (NullReferenceException)
-                            {
-                                door.cameraObjs[1] = null;
-                            }
-
+                            EditorGUI.EndDisabledGroup();
                             #region Teleport Player
                             door.TeleportPlayer = EditorGUILayout.ToggleLeft("Teleport Player", door.TeleportPlayer, EditorStyles.boldLabel);
                             if (door.TeleportPlayer)
